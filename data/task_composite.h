@@ -11,7 +11,7 @@ struct CrystParams {
 	double_long width_even;
 	wg::materials::Material material_odd;
 	double_long width_odd;
-	double_long disloc_number;
+	double_long disloc_pos;
 	double_long disloc_width;
 	
 };
@@ -26,6 +26,11 @@ const CrystParams _param {
 	0.00395	
 };
 
+template <typename Val, typename PhotonStructureParamFunc>
+stat_analize::BackTaskResult<Val>  BackTaskByPeackFreq(const std::string& file, Val val_start, Val val_end, int N, Val delta, PhotonStructureParamFunc ps_param_func, Offset offset) {
+	 return wg::calc::BackTaskByPeackFreq(agilent::LoadSpectrR(file), agilent::LoadF(file), val_start, val_end, N, delta, ps_param_func, offset);
+}
+
 wg::PhotonStructure EmptyPhotonStructure() {
 	return wg::PhotonStructure::Create(
 		wg::Layer {wg::materials::CreateWithParams(1), 0}, // air
@@ -34,16 +39,15 @@ wg::PhotonStructure EmptyPhotonStructure() {
 			_param.count_layers);
 } 
 
-wg::PhotonStructure DislocPhotonStructure(double_long eps_real, int layer_number = _param.disloc_number, double_long layer_width = _param.disloc_width, double_long eps_imag = 0, double_long mu_real = 1, double_long mu_imag = 0) {
+wg::PhotonStructure DislocPhotonStructure(wg::materials::Epsilon eps, double_long disloc_width = _param.disloc_width, int disloc_pos = _param.disloc_pos, wg::materials::Mu mu = wg::materials::Mu {1, 0}) {
 	auto ps = EmptyPhotonStructure();
-	ps.ReplaceLayer(wg::Layer {wg::materials::CreateWithParams(eps_real, eps_imag, mu_real, mu_imag), layer_width}, layer_number);
+	ps.ReplaceLayer(wg::Layer {wg::materials::Material{eps, mu}, disloc_width}, disloc_pos);
 	return ps;
-} 
+}
 
-Offset CalibOn(const std::string& exp_file, double_long calib_eps, double_long calib_width = _param.disloc_width,  bool show_graphics = false) {
-	wg::PhotonStructure theor_ps = DislocPhotonStructure(calib_eps, _param.disloc_number, calib_width);
+Offset CalibOnXOffset(const std::string& exp_file, wg::materials::Epsilon calib_eps, double_long calib_width = _param.disloc_width,  bool show_graphics = false) {
+	wg::PhotonStructure theor_ps = DislocPhotonStructure(calib_eps, calib_width);
 	wg::f_vector_load fv = agilent::LoadF(exp_file);
-	
 	
 	DataXY exp_spectr = agilent::LoadSpectrR(exp_file);
 	//DataXY theor_spectr = wg::calc::BuildSpectrR(fv, theor_ps);
@@ -75,24 +79,16 @@ Offset CompareFiles(const std::vector<std::string>& exp_files) {
 		plot.Draw();
 }
 
-double_long EpoxEpsCalc(const std::string& exp_file, Offset offset, bool show_graphics = false) {
+double_long EpoxEpsRealCalc(const std::string& exp_file, Offset offset, bool show_graphics = false) {
 	wg::f_vector_load fv = agilent::LoadF(exp_file);
 	wg::PointR min_exp = wg::calc::FindMinR(agilent::LoadSpectrR(exp_file));
 	auto ps = EmptyPhotonStructure();
-	auto solution = stat_analize::BackTask(2.0, 3.0, 100, 0.01,  
-		[&ps, &min_exp, &fv, &offset](double_long e) {
-             return std::sqrt(
-				std::pow(
-					wg::calc::FindMinR(
-						fv, ps.ReplaceLayer(
-							wg::Layer {wg::materials::CreateWithParams(e), _param.disloc_width}, _param.disloc_number
-						)
-					).f + offset.dx - min_exp.f, 2
-				)
-			) / 2;
-        });
-        
-	wg::PhotonStructure theor_ps = DislocPhotonStructure(solution.first);
+    const auto [solution_eps, s, arr] = wg::calc::BackTaskByPeackFreq(agilent::LoadSpectrR(exp_file), fv, 2.0, 3.0, 100, 0.01, 
+			[&ps](double_long val) {
+				return ps.ReplaceLayer(wg::Layer {wg::materials::CreateWithParams(val), _param.disloc_width}, _param.disloc_pos);
+			}, offset);
+    
+	wg::PhotonStructure theor_ps = DislocPhotonStructure(wg::materials::Epsilon {solution_eps, 0});
 	DataXY exp_spectr = agilent::LoadSpectrR(exp_file);
 	if(show_graphics) {
 		auto plot = wg::SpectrDrawer("Epox");
@@ -101,15 +97,36 @@ double_long EpoxEpsCalc(const std::string& exp_file, Offset offset, bool show_gr
 		plot.Draw();
 	}
 	
-	return solution.first;
+	return solution_eps;
+}
+
+double_long EpoxEpsImagCalc(const std::string& exp_file, double_long eps_real, Offset offset, bool show_graphics = false) {
+	auto ps = EmptyPhotonStructure();
+	const auto [solution_eps, s, arr] = BackTaskByPeackFreq(exp_file, 0.0, 1.0, 100, 0.01, 
+			[&ps, &eps_real](double_long val) {
+				return ps.ReplaceLayer(wg::Layer {wg::materials::CreateWithParams(eps_real, val), _param.disloc_width}, _param.disloc_pos);
+			}, offset);
+
+	wg::PhotonStructure theor_ps = DislocPhotonStructure(wg::materials::Epsilon {eps_real, solution_eps});
+	DataXY exp_spectr = agilent::LoadSpectrR(exp_file);
+	wg::f_vector_load fv = agilent::LoadF(exp_file);
+	if(show_graphics) {
+		auto plot = wg::SpectrDrawer("Epox_Image");
+		plot.Add("epox_{experiment}", exp_file);
+		plot.Add("epox_{theor}", DislocPhotonStructure(wg::materials::Epsilon {eps_real, solution_eps}), agilent::LoadF(exp_file), offset);
+		plot.Draw();
+	}
+	
+	return solution_eps;
 }
 
 void Analize() {
-	Offset offset = CalibOn("data/fp_3.95.s2p", 2.0, _param.disloc_width, true);
-	
+	Offset offset = CalibOnXOffset("data/fp_3.95.s2p", wg::materials::Epsilon{2.0, 0.0}, _param.disloc_width, true);
 	std::cout << "[calc] offset: " << offset.dx << std::endl;
-	double_long eps_epox = EpoxEpsCalc("data/c0_1.s2p", offset, true);
-	std::cout << "[calc] eps_epox: " << eps_epox << std::endl;
+	double_long eps_real_epox = EpoxEpsRealCalc("data/c0_2.s2p", offset, true);
+	std::cout << "[calc] eps_real_epox: " << eps_real_epox << std::endl;
+	double_long eps_imag_epox = EpoxEpsImagCalc("data/c0_2.s2p", eps_real_epox, offset, true);
+	std::cout << "[calc] eps_image_epox: " << eps_imag_epox << std::endl;
 	
 }
 }

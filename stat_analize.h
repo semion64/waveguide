@@ -7,11 +7,23 @@
 #include <cassert>
 #include <vector>
 #include <map>
+#include <tuple>
 #include "entities.h"
 
 namespace stat_analize {
 
 struct excp_minimum_not_found {};
+
+template <typename Val>
+struct PointS {
+	Val val;
+	double_long s;
+	PointS(Val val, double_long s) : val(val), s(s) { }
+};
+
+
+template<typename Val>
+using BackTaskResult = std::tuple<Val, double_long, std::vector<PointS<Val>>>;
 
 template <typename FuncY>
 void BuildChartXY(std::ostream& os, double_long x_begin, double_long x_end, double_long x_step, FuncY y, Offset offset = {0, 0}) {
@@ -76,31 +88,35 @@ Point FindMinY(const std::vector<double>& x_vector, FuncY y, Offset offset = {0,
 	return min;
 }
 
-template <typename FuncS>
-std::pair<double_long, double_long> BackTask(double_long val_start, double_long val_end, int N, double_long delta, FuncS func_s) {
+template <typename Val, typename FuncS>
+BackTaskResult<Val> BackTask(Val val_start, Val val_end, int N, Val delta, FuncS func_s) {
 	double_long step = (val_end - val_start) / N;
-	std::pair<double_long, double_long> min {val_start, func_s(val_start)};
+	std::vector<PointS<Val>> s_points;
+	PointS<Val> min {val_start, func_s(val_start)};
 	do {
-		std::pair<double_long, double_long> min_before {min.first, min.second};
+		PointS<Val> min_before = min;//{min.val, min.s};
 
-		for(double_long val = val_start; val <= val_end; val += step) {
+		for(Val val = val_start; val <= val_end; val += step) {
 			double_long s = func_s(val);
-			if(s < min.second) {
-				min.first = val;
-				min.second = s;
+			if(s < min.s) {
+				/*min.first = val;
+				min.second = s;*/
+				min = {val, s};
 			}
+			
+			s_points.push_back(PointS{val, s});
 		}
 		
-		if(std::abs(min.first - min_before.first) < dd) {
+		if(min.val == min_before.val) {
 			throw excp_minimum_not_found {};
 		}
 		
-		val_start = min.first - step;
-		val_end = min.first + step;
+		val_start = min.val - step;
+		val_end = min.val + step;
 		step = (val_end - val_start) / N;
 	} while (step > delta);
 	
-	return min;
+	return { min.val, min.s, s_points };
 }
 			
 

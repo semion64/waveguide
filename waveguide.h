@@ -34,6 +34,21 @@ DataXY BuildSpectrR(f_vector fv, const PhotonStructure& structure, Offset offset
 				
 PointR FindMinR(double_long f_begin, double_long f_end, double_long f_step,	const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide = waveguide_23x10);
 PointR FindMinR(f_vector fv, const PhotonStructure& structure, Offset offset = {0,0},  Waveguide waveguide = waveguide_23x10);
-PointR FindMinR(DataXY data, Offset offset = {0,0});	
+PointR FindMinR(DataXY data, Offset offset = {0,0});
+
+template <typename Val, typename PhotonStructureParamFunc>
+stat_analize::BackTaskResult<Val>  BackTaskByPeackFreq(DataXY exp_data, wg::f_vector fv, Val val_start, Val val_end, int N, Val delta, PhotonStructureParamFunc ps_param_func, Offset offset){
+	wg::PointR min_exp = wg::calc::FindMinR(exp_data);
+	return stat_analize::BackTask(val_start, val_end, N, delta,  
+		[&min_exp, &fv, &offset, &ps_param_func](Val val) {
+             return std::sqrt(
+				std::pow(
+					wg::calc::FindMinR(
+						fv, ps_param_func(val)
+					).f + offset.dx - min_exp.f, 2
+				) / 2
+			);
+        });  
+}	
 }
 }

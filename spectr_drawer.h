@@ -17,6 +17,14 @@ public:
 		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(fv, structure, offset));
 	}
 	
+	void Add(std::string title, PhotonStructure&& structure, double_long f_begin, double_long f_end, double_long f_step, Offset offset = {0, 0}) {
+		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(f_begin, f_end, f_step, structure, offset));
+	}
+		
+	void Add(std::string title, PhotonStructure&& structure, f_vector fv, Offset offset = {0, 0}) {
+		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(fv, structure, offset));
+	}
+	
 	void Add(std::string title, std::string file) {
 		spectrs_.emplace_back(title, agilent::LoadSpectrR(file));
 	}

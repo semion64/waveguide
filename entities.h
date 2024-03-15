@@ -46,9 +46,7 @@ struct PointR {
 	double_long R, f;
 };
 
-struct PointS {
-	double_long val, S;
-};
+
 struct Waveguide {
 		double_long a, b;
 };
