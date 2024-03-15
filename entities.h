@@ -7,7 +7,7 @@
 
 typedef double double_long;
 typedef std::complex<double_long> double_c;
-
+const double dd = 0.00000001;
 struct Point {
 	double x, y;
 	Point(double x, double y) {
@@ -26,6 +26,14 @@ struct SpectrRTValue {
 
 typedef std::vector<SpectrRTValue> SpectrRT;
 
+struct Offset {
+	double_long dx, dy;
+	Offset(double_long dx, double_long dy) {
+		this->dx = dx;
+		this->dy = dy;
+	}
+};
+
 namespace wg {	
 const double_long PI = M_PI;
 const double_long C = 299792458; //2.998 * (10 ^ 8); 
@@ -35,7 +43,11 @@ const double_long MU_0 = 1.257 * std::pow(10, -6);
 const double_long EPS_0 = 8.85 * std::pow(10, -12); 
 
 struct PointR {
-	double R, f;
+	double_long R, f;
+};
+
+struct PointS {
+	double_long val, S;
 };
 struct Waveguide {
 		double_long a, b;

@@ -26,14 +26,14 @@ double_c gamma(double_long w, materials::Material material, Waveguide waveguide 
 double_long CalcR(double_long w, const std::vector<Layer>& structure, Waveguide waveguide = waveguide_23x10);
 double_long to_dbm(double_long R);
 
-void BuildSpectrR(std::ostream& os, double_long f_begin, double_long f_end, double_long f_step,	const PhotonStructure& structure, Waveguide waveguide = waveguide_23x10);
-void BuildSpectrR(std::ostream& os, f_vector fv, const PhotonStructure& structure, Waveguide waveguide  = waveguide_23x10);
+void BuildSpectrR(std::ostream& os, double_long f_begin, double_long f_end, double_long f_step,	const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide = waveguide_23x10);
+void BuildSpectrR(std::ostream& os, f_vector fv, const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide  = waveguide_23x10);
 
-DataXY BuildSpectrR(double_long f_begin, double_long f_end, double_long f_step, const PhotonStructure& structure, Waveguide waveguide = waveguide_23x10);
-DataXY BuildSpectrR(f_vector fv, const PhotonStructure& structure, Waveguide waveguide  = waveguide_23x10);
+DataXY BuildSpectrR(double_long f_begin, double_long f_end, double_long f_step, const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide = waveguide_23x10);
+DataXY BuildSpectrR(f_vector fv, const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide  = waveguide_23x10);
 				
-PointR FindMinR(double_long f_begin, double_long f_end, double_long f_step,	const PhotonStructure& structure, Waveguide waveguide = waveguide_23x10);
-PointR FindMinR(f_vector fv, const PhotonStructure& structure, Waveguide waveguide = waveguide_23x10);
-				
+PointR FindMinR(double_long f_begin, double_long f_end, double_long f_step,	const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide = waveguide_23x10);
+PointR FindMinR(f_vector fv, const PhotonStructure& structure, Offset offset = {0,0},  Waveguide waveguide = waveguide_23x10);
+PointR FindMinR(DataXY data, Offset offset = {0,0});	
 }
 }

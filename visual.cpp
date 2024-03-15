@@ -29,7 +29,7 @@ void GnuplotDrawer::Draw() {
 		else {
 			is_first = false;
 		}
-		gp << " '-' with lines";// title '"<< ds.title << "'";
+		gp << " '-' with lines title '"<< ds.title << "'";
 	 }
 	 
 	 gp << "\n";

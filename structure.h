@@ -24,8 +24,9 @@ public:
 		structure_.push_back(layer);
 	}
 	
-	void ReplaceLayer(const Layer& layer, int pos) {
+	PhotonStructure& ReplaceLayer(const Layer& layer, int pos) {
 		structure_[pos] = layer;
+		return *this;
 	}
 	
 	const Layer& GetLayer(int pos) const {

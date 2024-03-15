@@ -8,6 +8,7 @@
 #include "waveguide.h"
 #include "agilent_spectr.h"
 #include "visual.h"
+#include "data/task_composite.h"
 
 std::ostream& operator<<(std::ostream& os, wg::PhotonStructure st) {
 	int n = 0;
@@ -110,9 +111,10 @@ void TestVisualSpectr() {
 }
 
 int main() {
+	task_composite::Analize();
 	//TestLoadSpectr();
 	//TestSpectr();
-	TestMin();
+	//TestMin();
 	//TestSpectr_f_from_file();
-	TestVisualSpectr();
+	//TestVisualSpectr();
 }

@@ -1,3 +1,4 @@
+#pragma once
 // sudo apt install libboost-all-dev
 // sudo apt install gnuplot
 // g++  main.cpp -lboost_iostreams -lboost_system -lboost_filesystem
@@ -13,6 +14,10 @@ namespace visual {
 struct DataSeries {
 	std::string title;
 	DataXY points;
+	DataSeries (const std::string& title, DataXY points) {
+		this->title = title;
+		this->points = points;
+	}
 };
 
 class DrawerPlot {
