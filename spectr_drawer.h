@@ -7,7 +7,7 @@
 namespace wg {
 class SpectrDrawer {
 public:
-	SpectrDrawer(const std::string& title) : title_(title) { }
+	SpectrDrawer(const std::string& title, ExpFileExcluder* file_excluder) : title_(title), file_excluder_(file_excluder) { }
 	
 	void Add(std::string title, const PhotonStructure& structure, double_long f_begin, double_long f_end, double_long f_step, Offset offset = {0, 0}) {
 		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(f_begin, f_end, f_step, structure, offset));
@@ -26,7 +26,7 @@ public:
 	}
 	
 	void Add(std::string title, std::string file) {
-		spectrs_.emplace_back(title, agilent::LoadSpectrR(file));
+		spectrs_.emplace_back(title, file_excluder_->LoadSpectrR(file));
 	}
 	
 	void Draw() {
@@ -43,5 +43,6 @@ public:
 private:
 	std::string title_;
 	std::vector<visual::DataSeries> spectrs_;
+	ExpFileExcluder* file_excluder_;
 };
 }

@@ -1,9 +1,29 @@
 #pragma once
 
+#include <iostream>
 #include <complex>
 #include <cmath>
 #include <math.h>
 #include <vector>
+#include <string>
+
+struct excp {
+		excp() {
+		}
+		excp(std::string text) {
+			std::cout << text;
+		}
+};
+
+struct excp_incorrect_file_format : public excp {
+	excp_incorrect_file_format() {}
+	excp_incorrect_file_format(std::string text) : excp(text) { }
+};
+
+struct excp_file_not_found : public excp {
+	excp_file_not_found() {}
+	excp_file_not_found(std::string text) : excp(text) { }
+};
 
 typedef double double_long;
 typedef std::complex<double_long> double_c;

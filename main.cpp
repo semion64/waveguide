@@ -23,7 +23,7 @@ std::ostream& operator<<(std::ostream& os, wg::PointR pt) {
 	os << "(" << pt.R << ", " << pt.f << ")";
 	return os;
 }
-
+/*
 void TestEntities() {
 	double_long f = 9'350'000'000;
 	std::cout.precision(30);
@@ -108,7 +108,7 @@ void TestVisualSpectr() {
 	plot->Draw();
 	plot->End();
 	delete plot;
-}
+}*/
 
 int main() {
 	task_composite::Analize();
