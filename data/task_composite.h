@@ -2,6 +2,7 @@
 
 #include "../waveguide.h"
 #include "../spectr_drawer.h"
+#include "../sample.h"
 
 namespace task_composite{
 wg::ExpFileExcluder* file_ex = new wg::ExpFileExcluderAgilent();
@@ -122,12 +123,15 @@ double_long EpoxEpsImagCalc(const std::string& exp_file, double_long eps_real, O
 }
 
 void Analize() {
-	Offset offset = CalibOnXOffset("data/fp_3.95.s2p", wg::materials::Epsilon{2.0, 0.0}, _param.disloc_width, true);
+	/*Offset offset = CalibOnXOffset("data/fp_3.95.s2p", wg::materials::Epsilon{2.0, 0.0}, _param.disloc_width, true);
 	std::cout << "[calc] offset: " << offset.dx << std::endl;
 	double_long eps_real_epox = EpoxEpsRealCalc("data/c0_2.s2p", offset, true);
 	std::cout << "[calc] eps_real_epox: " << eps_real_epox << std::endl;
 	double_long eps_imag_epox = EpoxEpsImagCalc("data/c0_2.s2p", eps_real_epox, offset, true);
-	std::cout << "[calc] eps_image_epox: " << eps_imag_epox << std::endl;
+	std::cout << "[calc] eps_image_epox: " << eps_imag_epox << std::endl;*/
 	
+	wg::SampleSet test_set = wg::SampleSet("data/test.set", "s2p", file_ex);
+	test_set.DrawSpectrR("test", {"c10_1", "c10_2"});
+	//test_set.Draw("test", [](auto& sample) {return sample.GetSpectrR(); }, "C10_1");
 }
 }

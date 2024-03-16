@@ -29,7 +29,12 @@ public:
 		spectrs_.emplace_back(title, file_excluder_->LoadSpectrR(file));
 	}
 	
+	void Add(std::string title, DataXY data) {
+		spectrs_.emplace_back(title, data);
+	}
+	
 	void Draw() {
+		std::cout << "drawing: " << title_ << std::endl;
 		visual::DrawerPlot* plot = new visual::GnuplotDrawer(title_);
 		plot->Start();
 		for(const auto& s : spectrs_) {
