@@ -1,11 +1,12 @@
 #pragma once
 
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <fstream>
+#include <optional>
 #include "entities.h"
 #include "materials.h"
-#include <optional>
 namespace wg{
 	
 struct Layer{
@@ -14,60 +15,89 @@ struct Layer{
 };
 
 class Struct {
+struct excp_struct_already_adjust{};
 public:
 	Struct&  AddLayer(const Layer& layer) {
-		structure_.push_back(layer);
+		st_.push_back(layer);
 		return *this;
 	}
 	
 	Struct&  AddLayer(const Layer& layer, size_t pos) {
-		structure_.insert(structure_.begin() + pos, layer);
+		st_.insert(st_.begin() + pos + adjust_layer_count_, layer);
 		return *this;
 	}
 	
 	Struct& ReplaceLayer(const Layer& layer, int pos) {
-		structure_[pos] = layer;
+		st_[pos + adjust_layer_count_] = layer;
+		return *this;
+	}
+	
+	Struct& RemoveLayer(int pos) {
+		st_.erase(st_.begin() + pos + adjust_layer_count_);
 		return *this;
 	}
 	
 	const Layer& GetLayer(int pos) const {
-		return structure_[pos];
+		return st_[pos + adjust_layer_count_];
 	}
 	
 	const std::vector<Layer>& GetAdjustStruct() const {
-		return structure_;
+		return st_;
 	}
 	
-	void Adjust(Offset offset, Layer adjust_1st_layer) {
+	void Adjust(Offset offset, std::optional<wg::materials::Epsilon> dEps = std::nullopt) {
+		if(dEps_) {
+			throw excp_struct_already_adjust {};
+		}
+		
 		offset_ = offset;
-		if(!adjust_1st_layer_) {
-			adjust_1st_layer_ = std::make_optional(adjust_1st_layer);
+		/*if(adjust_layer_count_ == 1) {
+			adjust_layer_ = adjust_layer;
+			if(adjust_layer_) {
+				ReplaceLayer(*adjust_layer_, 0);
+			}
+			else {
+				RemoveLayer(0);
+				adjust_layer_count_ = 0;
+			}
 		}
 		else {
-			*adjust_1st_layer_ = adjust_1st_layer;
+			adjust_layer_ = adjust_layer;
+			if(adjust_layer_) {
+				AddLayer(*adjust_layer_, 1);
+				adjust_layer_count_ = 1;
+			}
+		}*/
+		
+		if(dEps) {
+			dEps_ = dEps;
+			std::for_each(st_.begin(), st_.end(), [this] (auto& layer) {
+				layer.material.eps += *dEps_;
+			});
 		}
-		AddLayer(*adjust_1st_layer_, 1);
 	}
 	
 	Offset GetOffset() const {
 		return offset_;
 	}
 	
-	static Struct Create(Layer background, Layer even, Layer odd, int count_layers, Offset offset = {0, 0}) {
-		Struct structure;
-		structure.AddLayer(background);
+	static Struct Create(const Layer& background, const Layer& even, const Layer& odd, int count_layers){//, Offset offset = {0, 0}) {
+		Struct st;
+		st.AddLayer(background);
 		for(int i = 0; i < count_layers; ++i) {
-			structure.AddLayer(i % 2 == 0 ? even : odd);
+			st.AddLayer(i % 2 == 0 ? even : odd);
 		}
 		
-		structure.AddLayer(background);
-		//structure.Adjust(offset, std::nullopt);
-		return structure;
+		st.AddLayer(background);
+		//st.Adjust(offset, std::nullopt);
+		return st;
 	}
 	
 private:	
-	std::vector<Layer> structure_;
+	std::vector<Layer> st_;
+	//std::vector<Layer> st_adjust_;
 	Offset offset_;
-	std::optional<Layer> adjust_1st_layer_;
+	std::optional<wg::materials::Epsilon> dEps_;
+	size_t adjust_layer_count_ = 0;
 };
 }

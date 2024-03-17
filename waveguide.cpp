@@ -1,9 +1,15 @@
 #include "waveguide.h"
 
-namespace wg {	
-	
+namespace wg {
 
 namespace calc {
+f_vector_load DataXYToFVector(const DataXY& data) {
+	f_vector_load fv;
+	for(auto pt : data) {
+		fv.push_back(pt.x);
+	}
+	return fv;
+}
 using namespace std::complex_literals;
 
 double_long w(double_long f) {

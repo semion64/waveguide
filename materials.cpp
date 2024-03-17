@@ -11,5 +11,10 @@ Material CreateWithParams(double_long eps_real, double_long eps_image, double_lo
 	return Material{Epsilon{eps_real, eps_image}, Mu{mu_real, mu_image}};
 }
 
+Epsilon& operator+=(Epsilon& lhs, const Epsilon& rhs) {
+	lhs.image += rhs.image;
+	lhs.real += rhs.real;
+	return lhs;
+}
 }
 }

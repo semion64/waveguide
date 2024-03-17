@@ -14,6 +14,8 @@ struct Epsilon {
 	}
 };
 
+Epsilon& operator+=(Epsilon& lhs, const Epsilon& rhs);
+
 struct Mu {
 	double_long real;
 	double_long image;

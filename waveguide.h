@@ -17,7 +17,12 @@ const Waveguide waveguide_23x10{0.023, 0.01};
 typedef std::vector<double> f_vector_load;
 typedef const std::vector<double>& f_vector;
 
+
+
 namespace calc {
+	
+	
+f_vector_load DataXYToFVector(const DataXY& data);
 
 double_long w(double_long f);
 
