@@ -24,6 +24,7 @@ public:
 	};
 	typedef std::vector<DataLine> Spectr_s_param;
 	DataXY LoadSpectrR(const std::string& file) override;
+	DataXY LoadSpectrT(const std::string& file) override;
 	std::vector<double> LoadF(const std::string& file) override;
 	SpectrRT LoadSpectrRT(const std::string& file) override;
 	
@@ -40,6 +41,7 @@ private:
 	Spectr_s_param LoadSParams_(const std::string& file);
 	SpectrRT ConvertToRTSpectr_(const Spectr_s_param& spectr_s);
 	DataXY get_graph_FR_(SpectrRT sp);
+	DataXY get_graph_FT_(SpectrRT sp);
 };
 
 

@@ -3,6 +3,8 @@
 #include <map>
 #include <fstream>
 #include <optional>
+#include <memory>
+
 #include "entities.h"
 #include "exp_file_excluder.h"
 
@@ -18,7 +20,7 @@ public:
 	typedef std::string Litera;
 	typedef std::string Name;
 	typedef double_long Value;
-	Sample(Litera litera, std::string file_path, ExpFileExcluder* file_excluder) : litera_(litera), file_path_(file_path), file_excluder_(file_excluder) {}
+	Sample(Litera litera, std::string file_path, std::shared_ptr<ExpFileExcluder> file_excluder) : litera_(litera), file_path_(file_path), file_excluder_(file_excluder) {}
 	Litera GetLitera() const {
 		return litera_;
 	}
@@ -31,6 +33,28 @@ public:
 		return file_path_;
 	}
 	
+	/*
+	template <typename LoadSpectrFunc>
+	DataXY* GetSpectr(std::optional<DataXY> spectr, LoadSpectrFunc load_spectr_func) {
+		if(!spectr) {
+			*spectr = load_spectr_func(file_path_);
+		}
+		
+		return &(*spectr);
+	}
+
+	DataXY* GetSpectrR() {
+		return GetSpectr(spectrR_, [this](const auto& file) {
+			return file_excluder_->LoadSpectrR(file);
+		});
+	}
+	DataXY* GetSpectrT() {
+		return GetSpectr(spectrT_, [this](const auto& file) {
+			return file_excluder_->LoadSpectrR(file);
+		});
+	}
+	*/
+	
 	DataXY* GetSpectrR() {
 		if(!spectrR_) {
 			*spectrR_ = file_excluder_->LoadSpectrR(file_path_);
@@ -38,9 +62,20 @@ public:
 		
 		return &(*spectrR_);
 	}
+	
+	DataXY* GetSpectrT() {
+		if(!spectrT_) {
+			*spectrT_ = file_excluder_->LoadSpectrT(file_path_);
+		}
+		
+		return &(*spectrT_);
+	}
+	
+	
 private:
-	ExpFileExcluder* file_excluder_;
+	std::shared_ptr<ExpFileExcluder> file_excluder_;
 	std::optional<DataXY> spectrR_;
+	std::optional<DataXY> spectrT_;
 	Litera litera_;
 	std::string file_path_;
 	std::map<Name, Value> params_;
@@ -49,7 +84,7 @@ private:
 
 class SampleSet {
 public:
-	SampleSet(const std::string& sample_set_file, const std::string& data_file_ext, ExpFileExcluder* exp_file_excluder) : file_excluder_(exp_file_excluder) {
+	SampleSet(const std::string& sample_set_file, const std::string& data_file_ext, std::shared_ptr<ExpFileExcluder> exp_file_excluder) : file_excluder_(exp_file_excluder) {
 		std::ifstream is(sample_set_file);
 		if(!is.is_open()){
 			throw excp_file_not_found{};
@@ -79,7 +114,7 @@ public:
 		while(!is.eof()) {
 			std::string litera, file_name;
 			is >> litera;
-			Sample* sample = new Sample(litera, files_directory_ + "/" + litera + "." + data_file_ext, file_excluder_);
+			std::shared_ptr<Sample> sample = std::make_shared<Sample>(litera, files_directory_ + "/" + litera + "." + data_file_ext, file_excluder_);
 			for(const auto& name : param_names_) {
 				Sample::Value value;
 				is >> value;
@@ -90,9 +125,8 @@ public:
 		}
 	}
 	
-	void AddSample(Sample* sample) {
+	void AddSample(std::shared_ptr<Sample> sample) {
 		const auto& litera = sample->GetLitera();
-		std::cout << litera << std::endl;
 		if(samples_.count(litera)) {
 			throw excp_litera_exists ("litera '" + litera + "' already exists");
 		}
@@ -117,7 +151,7 @@ public:
 	}
 	
 	template<typename SampleGetDataFunc>
-	void Draw(std::string name, SampleGetDataFunc sample_get_data_func, std::initializer_list<std::string> literas){
+	void Draw(std::string name, SampleGetDataFunc sample_get_data_func, std::initializer_list<std::string> literas) const {
 		auto plot = wg::SpectrDrawer(name, file_excluder_);
 		for(auto&& litera : literas) {
 			plot.Add(litera, *sample_get_data_func(samples_.at(litera)));
@@ -126,14 +160,14 @@ public:
 		plot.Draw();
 	}
 	
-	void DrawSpectrR(std::string name, std::initializer_list<std::string> literas){
-		Draw(name, [](auto* sample) {return sample->GetSpectrR(); }, literas);
+	void DrawSpectrR(std::string name, std::initializer_list<std::string> literas) const{
+		Draw(name, [](const auto& sample) {return sample->GetSpectrR(); }, literas);
 	}
 	
 private:
-	ExpFileExcluder* file_excluder_;
+	std::shared_ptr<ExpFileExcluder> file_excluder_;
 	std::string files_directory_;
 	std::vector<std::string> param_names_;
-	std::map<Sample::Litera, Sample*> samples_;
+	std::map<Sample::Litera, std::shared_ptr<Sample>> samples_;
 };
 }

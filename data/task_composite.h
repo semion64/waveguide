@@ -1,11 +1,11 @@
 #pragma once
-
+#include <memory>
 #include "../waveguide.h"
 #include "../spectr_drawer.h"
 #include "../sample.h"
 
 namespace task_composite{
-wg::ExpFileExcluder* file_ex = new wg::ExpFileExcluderAgilent();
+std::shared_ptr<wg::ExpFileExcluder> file_ex = std::make_shared<wg::ExpFileExcluderAgilent>();
 
 struct CrystParams {
 	int count_layers;
@@ -15,7 +15,6 @@ struct CrystParams {
 	double_long width_odd;
 	double_long disloc_pos;
 	double_long disloc_width;
-	
 };
 
 const CrystParams _param {

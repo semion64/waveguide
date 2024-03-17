@@ -20,6 +20,10 @@ DataXY ExpFileExcluderAgilent::LoadSpectrR(const std::string& file) {
 	return get_graph_FR_(ConvertToRTSpectr_(LoadSParams_(file)));
 }
 
+DataXY ExpFileExcluderAgilent::LoadSpectrT(const std::string& file) {
+	return get_graph_FT_(ConvertToRTSpectr_(LoadSParams_(file)));
+}
+
 std::vector<double> ExpFileExcluderAgilent::LoadF(const std::string& file) {
 	return get_f_vector_(ConvertToRTSpectr_(LoadSParams_(file)));
 }
@@ -53,6 +57,15 @@ DataXY ExpFileExcluderAgilent::get_graph_FR_(SpectrRT sp) {
 	DataXY g;
 	for(const auto& s : sp) {
 		g.emplace_back(s.f, s.R);
+	}
+	
+	return g;
+}
+
+DataXY ExpFileExcluderAgilent::get_graph_FT_(SpectrRT sp) {
+	DataXY g;
+	for(const auto& s : sp) {
+		g.emplace_back(s.f, s.T);
 	}
 	
 	return g;
