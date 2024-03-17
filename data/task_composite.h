@@ -3,10 +3,11 @@
 #include "../waveguide.h"
 #include "../spectr_drawer.h"
 #include "../sample.h"
+#include "../calibrator.h"
 
 namespace task_composite{
 	
-wg::ExpFileExcluder* file_ex = new wg::ExpFileExcluderAgilent();
+wg::FileExcluder* file_ex = new wg::FileExcluderAgilent();
 
 struct CrystParams {
 	int count_layers;
@@ -28,21 +29,21 @@ const CrystParams _param {
 	0.00395	
 };
 
-template <typename Val, typename PhotonStructureParamFunc>
-stat_analize::BackTaskResult<Val>  BackTaskByPeackFreq(const std::string& file, Val val_start, Val val_end, int N, Val delta, PhotonStructureParamFunc ps_param_func, Offset offset) {
+template <typename Val, typename StructParamFunc>
+stat_analize::BackTaskResult<Val>  BackTaskByPeackFreq(const std::string& file, Val val_start, Val val_end, int N, Val delta, StructParamFunc ps_param_func, Offset offset) {
 	 return wg::calc::BackTaskByPeackFreq(file_ex->LoadSpectrR(file), file_ex->LoadF(file), val_start, val_end, N, delta, ps_param_func, offset);
 }
 
-wg::PhotonStructure EmptyPhotonStructure() {
-	return wg::PhotonStructure::Create(
+wg::Struct EmptyStruct() {
+	return wg::Struct::Create(
 		wg::Layer {wg::materials::CreateWithParams(1), 0}, // air
 		wg::Layer {_param.material_even, _param.width_even},// polycore
 		wg::Layer {_param.material_odd, _param.width_odd}, // fp
 			_param.count_layers);
 } 
 
-wg::PhotonStructure DislocPhotonStructure(wg::materials::Epsilon eps, double_long disloc_width = _param.disloc_width, int disloc_pos = _param.disloc_pos, wg::materials::Mu mu = wg::materials::Mu {1, 0}) {
-	auto ps = EmptyPhotonStructure();
+wg::Struct DislocStruct(wg::materials::Epsilon eps, double_long disloc_width = _param.disloc_width, int disloc_pos = _param.disloc_pos, wg::materials::Mu mu = wg::materials::Mu {1, 0}) {
+	auto ps = EmptyStruct();
 	ps.ReplaceLayer(wg::Layer {wg::materials::Material{eps, mu}, disloc_width}, disloc_pos);
 	return ps;
 }
@@ -55,22 +56,22 @@ Offset CompareFiles(const std::vector<std::string>& exp_files) {
 		}
 		plot.Draw();
 }
-
+/*
 double_long EpoxEpsRealCalc(const std::string& exp_file, Offset offset, bool show_graphics = false) {
 	wg::f_vector_load fv = file_ex->LoadF(exp_file);
 	wg::PointR min_exp = wg::calc::FindMinR(file_ex->LoadSpectrR(exp_file));
-	auto ps = EmptyPhotonStructure();
+	auto ps = EmptyStruct();
     const auto [solution_eps, s, arr] = wg::calc::BackTaskByPeackFreq(file_ex->LoadSpectrR(exp_file), fv, 2.0, 3.0, 100, 0.01, 
 			[&ps](double_long val) {
 				return ps.ReplaceLayer(wg::Layer {wg::materials::CreateWithParams(val), _param.disloc_width}, _param.disloc_pos);
 			}, offset);
     
-	wg::PhotonStructure theor_ps = DislocPhotonStructure(wg::materials::Epsilon {solution_eps, 0});
+	wg::Struct theor_ps = DislocStruct(wg::materials::Epsilon {solution_eps, 0});
 	DataXY exp_spectr = file_ex->LoadSpectrR(exp_file);
 	if(show_graphics) {
 		auto plot = wg::SpectrDrawer("Epox", *file_ex);
 		plot.Add("epox_{experiment}", exp_file);
-		plot.Add("epox_{theor}", theor_ps, fv, offset);
+		plot.Add("epox_{theor}", theor_ps, fv);
 		plot.Draw();
 	}
 	
@@ -78,25 +79,25 @@ double_long EpoxEpsRealCalc(const std::string& exp_file, Offset offset, bool sho
 }
 
 double_long EpoxEpsImagCalc(const std::string& exp_file, double_long eps_real, Offset offset, bool show_graphics = false) {
-	auto ps = EmptyPhotonStructure();
+	auto ps = EmptyStruct();
 	const auto [solution_eps, s, arr] = BackTaskByPeackFreq(exp_file, 0.0, 1.0, 100, 0.01, 
 			[&ps, &eps_real](double_long val) {
 				return ps.ReplaceLayer(wg::Layer {wg::materials::CreateWithParams(eps_real, val), _param.disloc_width}, _param.disloc_pos);
 			}, offset);
 
-	wg::PhotonStructure theor_ps = DislocPhotonStructure(wg::materials::Epsilon {eps_real, solution_eps});
+	wg::Struct theor_ps = DislocStruct(wg::materials::Epsilon {eps_real, solution_eps});
 	DataXY exp_spectr = file_ex->LoadSpectrR(exp_file);
 	wg::f_vector_load fv = file_ex->LoadF(exp_file);
 	if(show_graphics) {
 		auto plot = wg::SpectrDrawer("Epox_Image", *file_ex);
 		plot.Add("epox_{experiment}", exp_file);
-		plot.Add("epox_{theor}", DislocPhotonStructure(wg::materials::Epsilon {eps_real, solution_eps}), file_ex->LoadF(exp_file), offset);
+		plot.Add("epox_{theor}", DislocStruct(wg::materials::Epsilon {eps_real, solution_eps}), file_ex->LoadF(exp_file));
 		plot.Draw();
 	}
 	
 	return solution_eps;
 }
-
+*/
 void Graph_DependenceFromCNT() {
 	wg::SampleSet test_set = wg::SampleSet("data/test.set", "s2p", *file_ex);
 	auto plot = wg::SpectrDrawer("Dependence from CNT", *file_ex);
@@ -135,55 +136,8 @@ void Graph_DependenceFromCNT() {
 	plot_dr.Draw();
 }
 
-Offset CalibOnXOffset(const std::string& exp_file, wg::materials::Epsilon calib_eps, double_long calib_width = _param.disloc_width,  bool show_graphics = false) {
-	wg::PhotonStructure theor_ps = DislocPhotonStructure(calib_eps, calib_width);
-	wg::f_vector_load fv = file_ex->LoadF(exp_file);
-	
-	DataXY exp_spectr = file_ex->LoadSpectrR(exp_file);
-	DataXY theor_spectr = wg::calc::BuildSpectrR(fv, theor_ps);
-	if(show_graphics) {
-		auto plot = wg::SpectrDrawer("Ftoroplast", *file_ex);
-		plot.Add("fp_{experiment}", exp_file);
-		plot.Add("fp_{theor}", theor_ps, fv);
-		plot.Draw();
-	}
-	
-	wg::PointR pt_theor = wg::calc::FindMinR(fv, theor_ps);
-	wg::PointR pt_exp = wg::calc::FindMinR(exp_spectr);
-	
-	Offset offset {pt_exp.f - pt_theor.f, 0};
-	if(show_graphics) {
-		auto plot_offset = wg::SpectrDrawer("Ftoroplast + Offset", *file_ex);
-		plot_offset.Add("fp_{experiment}", exp_file);
-		plot_offset.Add("fp_{theor} + offset", theor_ps, fv, offset);
-		plot_offset.Draw();
-	}
-	
-	return offset;
-}
-/*
-void f1() {
-	DataXY exp_spectr = file_ex->LoadSpectrR("data/fp_3.95.s2p");
-}
-
-void f2() {
-	wg::SampleSet test_set = wg::SampleSet("data/test.set", "s2p", *file_ex);
-	DataXY exp_spectr = file_ex->LoadSpectrR("data/fp_3.95.s2p");
-	DataXY exp_spectr2 = file_ex->LoadSpectrR("data/fp_3.95.s2p");
-	DataXY exp_spectr3 = file_ex->LoadSpectrR("data/fp_3.95.s2p");
-	DataXY exp_spectr4 = file_ex->LoadSpectrR("data/fp_3.95.s2p");
-	
-	test_set.GetSample("c10_1")->GetSpectrR();
-}
-
-void f3() {
-	wg::ExpFileExcluder* file_ex = new wg::ExpFileExcluderAgilent();
-	DataXY exp_spectr1 = file_ex->LoadSpectrR("data/fp_3.95.s2p");
-	DataXY exp_spectr2 = file_ex->LoadSpectrR("data/fp_3.95.s2p");
-}*/
-
 void Analize() {
-	Offset offset = CalibOnXOffset("data/fp_3.95.s2p", wg::materials::Epsilon{2.0, 0.0}, _param.disloc_width, true);
+	//Offset offset = CalibOnXOffset("data/fp_3.95.s2p", wg::materials::Epsilon{2.0, 0.0}, _param.disloc_width, true);
 	//Offset offset2 = CalibOnXOffset("data/fp_3.95.s2p", wg::materials::Epsilon{2.0, 0.0}, _param.disloc_width, true);
 	
 	//std::cout << "[calc] offset: " << offset.dx << std::endl;
@@ -194,7 +148,33 @@ void Analize() {
 	
 	//wg::SampleSet test_set = wg::SampleSet("data/test.set", "s2p", file_ex);
 	//test_set.DrawSpectrR("test", {"c10_1", "c10_2"});
-	Graph_DependenceFromCNT();
+	//Graph_DependenceFromCNT();
+	
+	auto st_fp = DislocStruct(wg::materials::Epsilon {3.0, 0});
+	wg::CalibratorSpectrR calibrator = wg::CalibratorSpectrR(*file_ex);
+	calibrator.Calib(st_fp, "data/c10_1.s2p", true);
+	
+	auto plot = wg::SpectrDrawer("Ftoroplast", *file_ex);
+	plot.Add("before adjust", wg::calc::BuildSpectrR(9'200'000'000, 9'500'000'000, 1000000, st_fp));
+	calibrator.Adjust(st_fp);
+	plot.Add("after adjust", wg::calc::BuildSpectrR(9'200'000'000, 9'500'000'000, 1000000, st_fp));
+	plot.Draw();
+	
+	/*wg::Struct st = DislocStruct(wg::materials::Epsilon {3.0, 0});
+	st.AddLayer(wg::Layer{
+		wg::materials::Material {
+			wg::materials::Epsilon{1, 0.01},
+			wg::materials::Mu{1,0}
+		}, 0.01
+	}, 1);
+	
+	auto plot = wg::SpectrDrawer("Epox_Image", *file_ex);
+	
+	plot.Add("before adjust", wg::calc::BuildSpectrR(9'200'000'000, 10'500'000'000, 1'000'000, DislocStruct(wg::materials::Epsilon {3.0, 0})));
+	plot.Add("after adjust", wg::calc::BuildSpectrR(9'200'000'000, 10'500'000'000, 1'000'000, st));
+	plot.Draw();*/
+	
+	
 	
 }
 }

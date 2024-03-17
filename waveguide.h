@@ -26,29 +26,45 @@ double_c gamma(double_long w, materials::Material material, Waveguide waveguide 
 double_long CalcR(double_long w, const std::vector<Layer>& structure, Waveguide waveguide = waveguide_23x10);
 double_long to_dbm(double_long R);
 
-void BuildSpectrR(std::ostream& os, double_long f_begin, double_long f_end, double_long f_step,	const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide = waveguide_23x10);
-void BuildSpectrR(std::ostream& os, f_vector fv, const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide  = waveguide_23x10);
+void BuildSpectrR(std::ostream& os, double_long f_begin, double_long f_end, double_long f_step,	const Struct& structure, Waveguide waveguide = waveguide_23x10);
+void BuildSpectrR(std::ostream& os, f_vector fv, const Struct& structure, Waveguide waveguide  = waveguide_23x10);
 
-DataXY BuildSpectrR(double_long f_begin, double_long f_end, double_long f_step, const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide = waveguide_23x10);
-DataXY BuildSpectrR(f_vector fv, const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide  = waveguide_23x10);
+DataXY BuildSpectrR(double_long f_begin, double_long f_end, double_long f_step, const Struct& structure, Waveguide waveguide = waveguide_23x10);
+DataXY BuildSpectrR(f_vector fv, const Struct& structure, Waveguide waveguide  = waveguide_23x10);
 				
-PointR FindMinR(double_long f_begin, double_long f_end, double_long f_step,	const PhotonStructure& structure, Offset offset = {0,0}, Waveguide waveguide = waveguide_23x10);
-PointR FindMinR(f_vector fv, const PhotonStructure& structure, Offset offset = {0,0},  Waveguide waveguide = waveguide_23x10);
+PointR FindMinR(double_long f_begin, double_long f_end, double_long f_step,	const Struct& structure, Waveguide waveguide = waveguide_23x10);
+PointR FindMinR(f_vector fv, const Struct& structure,  Waveguide waveguide = waveguide_23x10);
 PointR FindMinR(const DataXY& data, Offset offset = {0,0});
 
-template <typename Val, typename PhotonStructureParamFunc>
-stat_analize::BackTaskResult<Val>  BackTaskByPeackFreq(const DataXY& exp_data, wg::f_vector fv, Val val_start, Val val_end, int N, Val delta, PhotonStructureParamFunc ps_param_func, Offset offset){
+template <typename Val, typename StructParamFunc>
+stat_analize::BackTaskResult<Val> BackTaskByPeackFreq(const DataXY& exp_data, wg::f_vector fv, Val val_start, Val val_end, int N, Val delta, StructParamFunc ps_param_func){
 	wg::PointR min_exp = wg::calc::FindMinR(exp_data);
 	return stat_analize::BackTask(val_start, val_end, N, delta,  
-		[&min_exp, &fv, &offset, &ps_param_func](Val val) {
+		[&min_exp, &fv, &ps_param_func](Val val) {
              return std::sqrt(
 				std::pow(
 					wg::calc::FindMinR(
 						fv, ps_param_func(val)
-					).f + offset.dx - min_exp.f, 2
+					).f - min_exp.f, 2
+				) / 2
+			);
+        });  
+}
+
+template <typename Val, typename StructParamFunc>
+stat_analize::BackTaskResult<Val> BackTaskByPeackR(const DataXY& exp_data, wg::f_vector fv, Val val_start, Val val_end, int N, Val delta, StructParamFunc ps_param_func){
+	wg::PointR min_exp = wg::calc::FindMinR(exp_data);
+	return stat_analize::BackTask(val_start, val_end, N, delta,  
+		[&min_exp, &fv, &ps_param_func](Val val) {
+             return std::sqrt(
+				std::pow(
+					wg::calc::FindMinR(
+						fv, ps_param_func(val)
+					).R - min_exp.R, 2
 				) / 2
 			);
         });  
 }	
+	
 }
 }

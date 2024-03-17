@@ -7,22 +7,22 @@
 namespace wg {
 class SpectrDrawer {
 public:
-	SpectrDrawer(const std::string& title, const ExpFileExcluder& file_excluder) : title_(title), file_excluder_(file_excluder) { }
+	SpectrDrawer(const std::string& title, const FileExcluder& file_excluder) : title_(title), file_excluder_(file_excluder) { }
 	
-	void Add(std::string title, const PhotonStructure& structure, double_long f_begin, double_long f_end, double_long f_step, Offset offset = {0, 0}) {
-		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(f_begin, f_end, f_step, structure, offset));
+	void Add(std::string title, const Struct& st, double_long f_begin, double_long f_end, double_long f_step) {
+		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(f_begin, f_end, f_step, st));
 	}
 	
-	void Add(std::string title, const PhotonStructure& structure, f_vector fv, Offset offset = {0, 0}) {
-		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(fv, structure, offset));
+	void Add(std::string title, const Struct& st, f_vector fv) {
+		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(fv, st));
 	}
 	
-	void Add(std::string title, PhotonStructure&& structure, double_long f_begin, double_long f_end, double_long f_step, Offset offset = {0, 0}) {
-		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(f_begin, f_end, f_step, structure, offset));
+	void Add(std::string title, Struct&& st, double_long f_begin, double_long f_end, double_long f_step) {
+		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(f_begin, f_end, f_step, st));
 	}
 		
-	void Add(std::string title, PhotonStructure&& structure, f_vector fv, Offset offset = {0, 0}) {
-		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(fv, structure, offset));
+	void Add(std::string title, Struct&& st, f_vector fv) {
+		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(fv, st));
 	}
 	
 	void Add(std::string title, std::string file) {
@@ -47,6 +47,6 @@ public:
 private:
 	std::string title_;
 	std::vector<visual::DataSeries> spectrs_;
-	const ExpFileExcluder& file_excluder_;
+	const FileExcluder& file_excluder_;
 };
 }

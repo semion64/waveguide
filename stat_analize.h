@@ -19,11 +19,24 @@ struct PointS {
 	Val val;
 	double_long s;
 	PointS(Val val, double_long s) : val(val), s(s) { }
+	
+	
 };
 
+template<typename Val>
+using DataS = std::vector<PointS<Val>>;
 
 template<typename Val>
-using BackTaskResult = std::tuple<Val, double_long, std::vector<PointS<Val>>>;
+using BackTaskResult = std::tuple<Val, double_long, DataS<Val>>;
+
+template<typename Val>
+DataXY PointSToDataXY(std::vector<PointS<Val>> pts) {
+	DataXY d;
+	for(auto& pt : pts) {
+		d.emplace_back(pt.val, pt.s);
+	}
+	return d;
+}
 
 template <typename FuncY>
 void BuildChartXY(std::ostream& os, double_long x_begin, double_long x_end, double_long x_step, FuncY y, Offset offset = {0, 0}) {

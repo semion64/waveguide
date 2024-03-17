@@ -26,7 +26,7 @@ public:
 	typedef std::string Name;
 	typedef double_long Value;
 	
-	Sample(Litera litera, std::string file_path, const ExpFileExcluder& file_excluder) : litera_(litera), file_path_(file_path), file_excluder_(file_excluder) {}
+	Sample(Litera litera, std::string file_path, const FileExcluder& file_excluder) : litera_(litera), file_path_(file_path), file_excluder_(file_excluder) {}
 	Litera GetLitera() const {
 		return litera_;
 	}
@@ -61,7 +61,7 @@ public:
 	
 	
 private:
-	const ExpFileExcluder& file_excluder_;
+	const FileExcluder& file_excluder_;
 	std::optional<DataXY> spectrR_;
 	std::optional<DataXY> spectrT_;
 	Litera litera_;
@@ -71,7 +71,7 @@ private:
 
 class SampleSet {
 public:
-	SampleSet(const std::string& sample_set_file, const std::string& data_file_ext, const ExpFileExcluder& exp_file_excluder) : file_excluder_(exp_file_excluder) {
+	SampleSet(const std::string& sample_set_file, const std::string& data_file_ext, const FileExcluder& exp_file_excluder) : file_excluder_(exp_file_excluder) {
 		std::ifstream is(sample_set_file);
 		if(!is.is_open()){
 			throw excp_file_not_found{};
@@ -187,7 +187,7 @@ public:
 	}
 	
 private:
-	const ExpFileExcluder& file_excluder_;
+	const FileExcluder& file_excluder_;
 	std::string files_directory_;
 	std::vector<std::string> param_names_;
 	std::map<Sample::Litera, std::shared_ptr<Sample>> samples_;

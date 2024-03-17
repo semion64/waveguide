@@ -9,7 +9,7 @@
 
 namespace wg {
 struct exc_file_not_open {};
-class ExpFileExcluderAgilent : public ExpFileExcluder {
+class FileExcluderAgilent : public FileExcluder {
 public:	
 	struct DataLine {
 		double 	f,

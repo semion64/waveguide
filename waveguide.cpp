@@ -50,29 +50,29 @@ double_long CalcR(double_long w, const std::vector<Layer>& structure, Waveguide 
 	}
 } */
  
-void BuildSpectrR(std::ostream& os, double_long f_begin, double_long f_end, double_long f_step,	const PhotonStructure& structure, Offset offset, Waveguide waveguide) {
-	stat_analize::BuildChartXY(os, f_begin, f_end, f_step, [&structure, &waveguide](double_long f) {return to_dbm(CalcR(w(f), structure.GetStructure(), waveguide));}, offset);
+void BuildSpectrR(std::ostream& os, double_long f_begin, double_long f_end, double_long f_step,	const Struct& st, Waveguide waveguide) {
+	stat_analize::BuildChartXY(os, f_begin, f_end, f_step, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
 }
 
-void BuildSpectrR(std::ostream& os, f_vector fv, const PhotonStructure& structure, Offset offset, Waveguide waveguide) {
-	stat_analize::BuildChartXY(os, fv, [&structure, &waveguide](double_long f) {return to_dbm(CalcR(w(f), structure.GetStructure(), waveguide));}, offset);
+void BuildSpectrR(std::ostream& os, f_vector fv, const Struct& st, Waveguide waveguide) {
+	stat_analize::BuildChartXY(os, fv, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
 }
 
-DataXY BuildSpectrR(double_long f_begin, double_long f_end, double_long f_step, const PhotonStructure& structure, Offset offset, Waveguide waveguide) {
-	return stat_analize::BuildChartXY(f_begin, f_end, f_step, [&structure, &waveguide](double_long f) {return to_dbm(CalcR(w(f), structure.GetStructure(), waveguide));}, offset);
+DataXY BuildSpectrR(double_long f_begin, double_long f_end, double_long f_step, const Struct& st, Waveguide waveguide) {
+	return stat_analize::BuildChartXY(f_begin, f_end, f_step, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
 }
 
-DataXY BuildSpectrR(f_vector fv, const PhotonStructure& structure, Offset offset, Waveguide waveguide) {
-	return stat_analize::BuildChartXY(fv, [&structure, &waveguide](double_long f) {return to_dbm(CalcR(w(f), structure.GetStructure(), waveguide));}, offset);
+DataXY BuildSpectrR(f_vector fv, const Struct& st, Waveguide waveguide) {
+	return stat_analize::BuildChartXY(fv, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
 }
 
-PointR FindMinR(double_long f_begin, double_long f_end, double_long f_step, const PhotonStructure& structure, Offset offset, Waveguide waveguide) {
-	Point min = stat_analize::FindMinY(f_begin, f_end, f_step, [&structure, &waveguide](double_long f) {return to_dbm(CalcR(w(f), structure.GetStructure(), waveguide));}, offset);
+PointR FindMinR(double_long f_begin, double_long f_end, double_long f_step, const Struct& st, Offset offset, Waveguide waveguide) {
+	Point min = stat_analize::FindMinY(f_begin, f_end, f_step, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
 	return PointR{min.y, min.x};
 }
 
-PointR FindMinR(f_vector fv, const PhotonStructure& structure, Offset offset, Waveguide waveguide) {
-	Point min = stat_analize::FindMinY(fv, [&structure, &waveguide](double_long f) {return to_dbm(CalcR(w(f), structure.GetStructure(), waveguide));}, offset);
+PointR FindMinR(f_vector fv, const Struct& st, Waveguide waveguide) {
+	Point min = stat_analize::FindMinY(fv, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
 	return PointR{min.y, min.x};
 }
 

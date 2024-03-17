@@ -10,9 +10,9 @@
 #include "visual.h"
 #include "data/task_composite.h"
 
-std::ostream& operator<<(std::ostream& os, wg::PhotonStructure st) {
+std::ostream& operator<<(std::ostream& os, wg::Struct st) {
 	int n = 0;
-	for(const auto& layer: st.GetStructure()) {
+	for(const auto& layer: st.GetAdjustStruct()) {
 		os << n++ << ".\t" << "d: " << layer.d  << ",\teps: " << layer.material.eps.real << ",\tsigma: " << layer.material.eps.image << ",\tmu_real: " << layer.material.mu.real << std::endl;
 	}
 	return os;
@@ -41,10 +41,10 @@ void TestSpectr() {
 	wg::Layer polycore {wg::materials::CreateWithParams(9.6), 0.001};
 	wg::Layer fp {wg::materials::CreateWithParams(2.0), 0.009};
 	wg::Layer epox {wg::materials::CreateWithParams(3.0,0.0), 0.004};
-	wg::PhotonStructure ps = wg::PhotonStructure::Create(air, polycore, fp, 11);
+	wg::Struct ps = wg::Struct::Create(air, polycore, fp, 11);
 	ps.ReplaceLayer(epox, 6);
 	
-	//wg::calc::CalcR(wg::calc::w(f), ps.GetStructure());
+	//wg::calc::CalcR(wg::calc::w(f), ps.GetAdjustStruct());
 	wg::calc::BuildSpectrR(std::cout, 9'200'000'000, 9'500'000'000, 1'000'000, ps);		
 }
 
@@ -54,7 +54,7 @@ void TestMin() {
 	wg::Layer polycore {wg::materials::CreateWithParams(9.6), 0.001};
 	wg::Layer fp {wg::materials::CreateWithParams(2.0), 0.009};
 	wg::Layer epox {wg::materials::CreateWithParams(3.0,0.0), 0.004};
-	wg::PhotonStructure ps = wg::PhotonStructure::Create(air, polycore, fp, 11);
+	wg::Struct ps = wg::Struct::Create(air, polycore, fp, 11);
 	ps.ReplaceLayer(epox, 6);
 	
 	wg::PointR min = wg::calc::FindMinR(9'200'000'000, 9'500'000'000, 1'000'000, ps); 
@@ -69,7 +69,7 @@ void TestSpectr_f_from_file() {
 	wg::Layer polycore {wg::materials::CreateWithParams(9.6), 0.001};
 	wg::Layer fp {wg::materials::CreateWithParams(2.0), 0.009};
 	wg::Layer epox {wg::materials::CreateWithParams(3.0,0.0), 0.004};
-	wg::PhotonStructure ps = wg::PhotonStructure::Create(air, polycore, fp, 11);
+	wg::Struct ps = wg::Struct::Create(air, polycore, fp, 11);
 	ps.ReplaceLayer(epox, 6);
 	wg::f_vector_load fv = agilent::LoadF("data/c0_1.s2p");
 	wg::calc::BuildSpectrR(std::cout, fv, ps);		
@@ -87,15 +87,15 @@ void TestVisualSpectr() {
 	wg::Layer polycore {wg::materials::CreateWithParams(9.6), 0.001};
 	wg::Layer fp {wg::materials::CreateWithParams(2.0), 0.009};
 	
-	wg::PhotonStructure ps1 = wg::PhotonStructure::Create(air, polycore, fp, 11);
+	wg::Struct ps1 = wg::Struct::Create(air, polycore, fp, 11);
 	wg::Layer epox1 {wg::materials::CreateWithParams(3.0,0.0), 0.004};
 	ps1.ReplaceLayer(epox1, 6);
 	
-	wg::PhotonStructure ps2 = wg::PhotonStructure::Create(air, polycore, fp, 11);
+	wg::Struct ps2 = wg::Struct::Create(air, polycore, fp, 11);
 	wg::Layer epox2 {wg::materials::CreateWithParams(3.0,0.0), 0.0038};
 	ps2.ReplaceLayer(epox2, 6);
 	
-	//wg::calc::CalcR(wg::calc::w(f), ps.GetStructure());
+	//wg::calc::CalcR(wg::calc::w(f), ps.GetAdjustStruct());
 	DataXY s1 = wg::calc::BuildSpectrR(9'200'000'000, 9'500'000'000, 1'000'000, ps1);
 	DataXY s2 = wg::calc::BuildSpectrR(9'200'000'000, 9'500'000'000, 1'000'000, ps2);
 	

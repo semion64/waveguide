@@ -56,6 +56,11 @@ struct Offset {
 		this->dx = dx;
 		this->dy = dy;
 	}
+	
+	Offset() {
+		this->dx = 0;
+		this->dy = 0;
+	}
 };
 
 namespace wg {	

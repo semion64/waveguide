@@ -1,14 +1,14 @@
 #include "agilent_spectr.h"
 
 namespace wg{
-std::istream& operator>>(std::istream& is, ExpFileExcluderAgilent::Spectr_s_param& st) {
+std::istream& operator>>(std::istream& is, FileExcluderAgilent::Spectr_s_param& st) {
 	int n = 0;
 	std::string line;
 	for(int i = 0; i < 9; ++i) { // skip input hat
 		std::getline(is, line);
 	}
 	
-	ExpFileExcluderAgilent::DataLine dl;
+	FileExcluderAgilent::DataLine dl;
 	while(is >> dl.f >> dl.s11_real >> dl.s11_imag >> dl.s21_real >> dl.s21_imag >> dl.s12_real >> dl.s12_imag >> dl.s22_real >> dl.s22_imag) {
 		st.push_back(dl);
 	}
@@ -16,24 +16,24 @@ std::istream& operator>>(std::istream& is, ExpFileExcluderAgilent::Spectr_s_para
 	return is;
 }
 
-DataXY ExpFileExcluderAgilent::LoadSpectrR(const std::string& file) const {
+DataXY FileExcluderAgilent::LoadSpectrR(const std::string& file) const {
 	
 	return get_graph_FR_(ConvertToRTSpectr_(LoadSParams_(file)));
 }
 
-DataXY ExpFileExcluderAgilent::LoadSpectrT(const std::string& file) const {
+DataXY FileExcluderAgilent::LoadSpectrT(const std::string& file) const {
 	return get_graph_FT_(ConvertToRTSpectr_(LoadSParams_(file)));
 }
 
-std::vector<double> ExpFileExcluderAgilent::LoadF(const std::string& file) const {
+std::vector<double> FileExcluderAgilent::LoadF(const std::string& file) const {
 	return get_f_vector_(ConvertToRTSpectr_(LoadSParams_(file)));
 }
 
-SpectrRT ExpFileExcluderAgilent::LoadSpectrRT(const std::string& file) const {
+SpectrRT FileExcluderAgilent::LoadSpectrRT(const std::string& file) const {
 	return ConvertToRTSpectr_(LoadSParams_(file));
 }
 
-ExpFileExcluderAgilent::Spectr_s_param ExpFileExcluderAgilent::LoadSParams_(const std::string& file) const {
+FileExcluderAgilent::Spectr_s_param FileExcluderAgilent::LoadSParams_(const std::string& file) const {
 	std::ifstream is(file);
 	if(!is.is_open()) {
 		throw exc_file_not_open{};
@@ -45,7 +45,7 @@ ExpFileExcluderAgilent::Spectr_s_param ExpFileExcluderAgilent::LoadSParams_(cons
 	return sp;
 }
 
-SpectrRT ExpFileExcluderAgilent::ConvertToRTSpectr_(const Spectr_s_param& spectr_s) const {
+SpectrRT FileExcluderAgilent::ConvertToRTSpectr_(const Spectr_s_param& spectr_s) const {
 	SpectrRT spectr_rt;
 	
 	for(const auto& s : spectr_s) {
@@ -55,7 +55,7 @@ SpectrRT ExpFileExcluderAgilent::ConvertToRTSpectr_(const Spectr_s_param& spectr
 	return spectr_rt;
 }
 
-DataXY ExpFileExcluderAgilent::get_graph_FR_(SpectrRT sp) const {
+DataXY FileExcluderAgilent::get_graph_FR_(SpectrRT sp) const {
 	DataXY g;
 	for(const auto& s : sp) {
 		g.emplace_back(s.f, s.R);
@@ -64,7 +64,7 @@ DataXY ExpFileExcluderAgilent::get_graph_FR_(SpectrRT sp) const {
 	return g;
 }
 
-DataXY ExpFileExcluderAgilent::get_graph_FT_(SpectrRT sp) const {
+DataXY FileExcluderAgilent::get_graph_FT_(SpectrRT sp) const {
 	DataXY g;
 	for(const auto& s : sp) {
 		g.emplace_back(s.f, s.T);

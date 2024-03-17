@@ -12,7 +12,7 @@ std::ostream& operator<<(std::ostream& os, SpectrRT sp);
 
 void Save(const std::string& file, const SpectrRT& sp);
 
-class ExpFileExcluder {
+class FileExcluder {
 public:
 	virtual DataXY LoadSpectrR(const std::string& file) const = 0;
 	virtual DataXY LoadSpectrT(const std::string& file) const = 0;
