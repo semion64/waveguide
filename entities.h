@@ -6,6 +6,8 @@
 #include <math.h>
 #include <vector>
 #include <string>
+#include <cassert>
+#include <memory>
 
 struct excp {
 		excp() {
@@ -38,6 +40,8 @@ struct Point {
 
 typedef std::vector<Point> DataXY;
 
+DataXY operator-(const DataXY& l, const DataXY& r);
+std::ostream& operator<<(std::ostream& os, const DataXY& r);
 struct SpectrRTValue {
 	double f;
 	double R;

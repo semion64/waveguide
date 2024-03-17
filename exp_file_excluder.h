@@ -14,9 +14,9 @@ void Save(const std::string& file, const SpectrRT& sp);
 
 class ExpFileExcluder {
 public:
-	virtual DataXY LoadSpectrR(const std::string& file) = 0;
-	virtual DataXY LoadSpectrT(const std::string& file) = 0;
-	virtual std::vector<double> LoadF(const std::string& file) = 0;
-	virtual SpectrRT LoadSpectrRT(const std::string& file) = 0;
+	virtual DataXY LoadSpectrR(const std::string& file) const = 0;
+	virtual DataXY LoadSpectrT(const std::string& file) const = 0;
+	virtual std::vector<double> LoadF(const std::string& file) const = 0;
+	virtual SpectrRT LoadSpectrRT(const std::string& file) const = 0;
 };
 }

@@ -15,11 +15,7 @@ struct Layer{
 
 class PhotonStructure {
 public:
-	void LoadSParams(std::string file) {
-		std::ifstream is(file);
-		//...
-	}
-	
+		
 	void AddLayer(const Layer& layer) {
 		structure_.push_back(layer);
 	}

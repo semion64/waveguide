@@ -22,14 +22,15 @@ public:
 				s22_real,
 				s22_imag;
 	};
+	
 	typedef std::vector<DataLine> Spectr_s_param;
-	DataXY LoadSpectrR(const std::string& file) override;
-	DataXY LoadSpectrT(const std::string& file) override;
-	std::vector<double> LoadF(const std::string& file) override;
-	SpectrRT LoadSpectrRT(const std::string& file) override;
+	DataXY LoadSpectrR(const std::string& file) const override;
+	DataXY LoadSpectrT(const std::string& file) const override;
+	std::vector<double> LoadF(const std::string& file) const override;
+	SpectrRT LoadSpectrRT(const std::string& file) const override;
 	
 	template <typename Spectr>
-	std::vector<double> get_f_vector_(Spectr sp) {
+	std::vector<double> get_f_vector_(Spectr sp) const {
 		std::vector<double> f_vec;
 		for(const auto& s : sp) {
 			f_vec.push_back(s.f);
@@ -38,10 +39,10 @@ public:
 		return f_vec;
 	}
 private:
-	Spectr_s_param LoadSParams_(const std::string& file);
-	SpectrRT ConvertToRTSpectr_(const Spectr_s_param& spectr_s);
-	DataXY get_graph_FR_(SpectrRT sp);
-	DataXY get_graph_FT_(SpectrRT sp);
+	Spectr_s_param LoadSParams_(const std::string& file) const;
+	SpectrRT ConvertToRTSpectr_(const Spectr_s_param& spectr_s) const;
+	DataXY get_graph_FR_(SpectrRT sp) const;
+	DataXY get_graph_FT_(SpectrRT sp) const;
 };
 
 

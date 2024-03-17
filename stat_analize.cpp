@@ -2,8 +2,9 @@
 
 namespace stat_analize {
 
-Point FindMinY(DataXY data, Offset offset) {
+Point FindMinY(const DataXY& data, Offset offset) {
 	assert(data.size() > 0);
+	
 	Point min = {data[0].x + offset.dx, data[0].y + offset.dy};
 	for(auto pt : data) {
 		if(pt.y + offset.dy < min.y) {
@@ -11,7 +12,6 @@ Point FindMinY(DataXY data, Offset offset) {
 			min.y = pt.y + offset.dy;
 		}
 	}
-	
 	return min;
 }
 }

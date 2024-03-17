@@ -66,7 +66,6 @@ DataXY BuildSpectrR(f_vector fv, const PhotonStructure& structure, Offset offset
 	return stat_analize::BuildChartXY(fv, [&structure, &waveguide](double_long f) {return to_dbm(CalcR(w(f), structure.GetStructure(), waveguide));}, offset);
 }
 
-
 PointR FindMinR(double_long f_begin, double_long f_end, double_long f_step, const PhotonStructure& structure, Offset offset, Waveguide waveguide) {
 	Point min = stat_analize::FindMinY(f_begin, f_end, f_step, [&structure, &waveguide](double_long f) {return to_dbm(CalcR(w(f), structure.GetStructure(), waveguide));}, offset);
 	return PointR{min.y, min.x};
@@ -77,10 +76,10 @@ PointR FindMinR(f_vector fv, const PhotonStructure& structure, Offset offset, Wa
 	return PointR{min.y, min.x};
 }
 
-PointR FindMinR(DataXY data,  Offset offset) {
+PointR FindMinR(const DataXY& data,  Offset offset) {
 	Point min = stat_analize::FindMinY(data, offset);
 	return PointR{min.y, min.x};
 }
-		
+
 }
 }

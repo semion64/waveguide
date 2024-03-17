@@ -120,5 +120,5 @@ BackTaskResult<Val> BackTask(Val val_start, Val val_end, int N, Val delta, FuncS
 }
 			
 
-Point FindMinY(DataXY data, Offset offset = {0, 0});
+Point FindMinY(const DataXY& data, Offset offset = {0, 0});
 }

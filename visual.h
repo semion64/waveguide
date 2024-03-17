@@ -13,7 +13,7 @@ namespace visual {
 
 struct DataSeries {
 	std::string title;
-	const DataXY& points;
+	DataXY points;
 	DataSeries (const std::string& title, const DataXY& data_points) : title(title), points(data_points){ }
 	DataSeries (const std::string& title, DataXY&& data_points) : title(title), points(data_points){ }
 };

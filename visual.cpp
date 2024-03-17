@@ -36,7 +36,7 @@ void GnuplotDrawer::Draw() {
 	 
 	 for(const auto& ds : data_series_) {
 		std::vector<std::vector<double>> pts;
-		for(auto pt : ds.points) {
+		for(const auto& pt : ds.points) {
 			pts.push_back(std::vector<double> {pt.x, pt.y});
 		}
 		gp.send1d(pts);
