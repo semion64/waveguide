@@ -3,7 +3,7 @@
 #include <map>
 #include <fstream>
 #include <optional>
-//#include <memory>
+#include <memory>
 
 #include "entities.h"
 #include "exp_file_excluder.h"
@@ -42,28 +42,6 @@ public:
 	std::string GetFilePath() const {
 		return file_path_;
 	}
-	
-	/*
-	template <typename LoadSpectrFunc>
-	DataXY* GetSpectr(std::optional<DataXY> spectr, LoadSpectrFunc load_spectr_func) {
-		if(!spectr) {
-			*spectr = load_spectr_func(file_path_);
-		}
-		
-		return &(*spectr);
-	}
-
-	DataXY* GetSpectrR() {
-		return GetSpectr(spectrR_, [this](const auto& file) {
-			return file_excluder_.LoadSpectrR(file);
-		});
-	}
-	DataXY* GetSpectrT() {
-		return GetSpectr(spectrT_, [this](const auto& file) {
-			return file_excluder_.LoadSpectrR(file);
-		});
-	}
-	*/
 	
 	const DataXY& GetSpectrR() {
 		if(!spectrR_) {
@@ -123,7 +101,7 @@ public:
 		while(!is.eof()) {
 			std::string litera, file_name;
 			is >> litera;
-			Sample* sample = new Sample(litera, files_directory_ + "/" + litera + "." + data_file_ext, file_excluder_);
+			std::shared_ptr<Sample> sample = std::make_shared<Sample>(litera, files_directory_ + "/" + litera + "." + data_file_ext, file_excluder_);
 			for(const auto& name : param_names_) {
 				Sample::Value value;
 				is >> value;
@@ -136,7 +114,7 @@ public:
 		is.close();
 	}
 	
-	void AddSample(Sample* sample) {
+	void AddSample(std::shared_ptr<Sample> sample) {
 		const auto& litera = sample->GetLitera();
 		if(samples_.count(litera)) {
 			throw excp_litera_exists ("litera '" + litera + "' already exists");
@@ -179,7 +157,7 @@ public:
 	
 	template <typename FuncY>
 	DataXY ParametrDependence(std::string param, FuncY func_y, std::initializer_list<std::string> literas = {}) {
-		std::vector<Sample*> choose_samples_;
+		std::vector<std::shared_ptr<Sample>> choose_samples_;
 		if(literas.size() == 0) {
 			for(const auto& [litera, sample] : samples_) {
 				 choose_samples_.push_back(sample);
@@ -201,7 +179,7 @@ public:
 		return data;
 	}
 	
-	Sample* GetSample(std::string litera) {
+	std::shared_ptr<Sample> GetSample(std::string litera) {
 		if(!samples_.count(litera)) {
 			throw excp_litera_not_exists{};
 		}
@@ -212,6 +190,6 @@ private:
 	const ExpFileExcluder& file_excluder_;
 	std::string files_directory_;
 	std::vector<std::string> param_names_;
-	std::map<Sample::Litera, Sample*> samples_;
+	std::map<Sample::Litera, std::shared_ptr<Sample>> samples_;
 };
 }
