@@ -4,7 +4,7 @@
 #include "../spectr_drawer.h"
 #include "../sample.h"
 #include "../calibrator.h"
-
+#include "../permutation.h"
 namespace task_composite{
 	
 wg::FileExcluder* file_ex = new wg::FileExcluderAgilent();
@@ -114,7 +114,10 @@ wg::CalibratorSpectrR CalibrateOnFp(const std::string& file = "data/fp_3.95.s2p"
 void Analize() {
 	//wg::SampleSet test_set = wg::SampleSet("data/test.set", "s2p", file_ex);
 	//test_set.DrawSpectrR("test", {"c10_1", "c10_2"});
-	auto calibrator = CalibrateOnFp("data/fp_3.95.s2p", true);
-	Graph_DependenceFromCNT();
+	//auto calibrator = CalibrateOnFp("data/fp_3.95.s2p", true);
+	//Graph_DependenceFromCNT();
+	
+	//algebra::vector::Vector<int> a {5, 3, -4}, b {6, 7, -8};
+	//std::cout << (a ^ b) << std::endl; 
 }
 }

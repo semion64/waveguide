@@ -15,6 +15,8 @@ struct Epsilon {
 };
 
 Epsilon& operator+=(Epsilon& lhs, const Epsilon& rhs);
+Epsilon operator+(const Epsilon& lhs, const Epsilon& rhs);
+Epsilon operator-(const Epsilon& lhs, const Epsilon& rhs);
 
 struct Mu {
 	double_long real;
@@ -23,6 +25,10 @@ struct Mu {
 		return double_c(real, image);
 	}
 };
+
+Mu& operator+=(Mu& lhs, const Mu& rhs);
+Mu operator+(const Mu& lhs, const Mu& rhs);
+Mu operator-(const Mu& lhs, const Mu& rhs);
 
 struct Material {
 	Epsilon eps;

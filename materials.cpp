@@ -16,5 +16,29 @@ Epsilon& operator+=(Epsilon& lhs, const Epsilon& rhs) {
 	lhs.real += rhs.real;
 	return lhs;
 }
+
+Epsilon operator+(const Epsilon& lhs, const Epsilon& rhs) {
+	return {lhs.real + rhs.real, lhs.image + rhs.image };
+}
+
+Epsilon operator-(const Epsilon& lhs, const Epsilon& rhs) {
+	return {rhs.real - lhs.real, rhs.image - lhs.image };
+}
+
+Mu& operator+=(Mu& lhs, const Mu& rhs) {
+	lhs.image += rhs.image;
+	lhs.real += rhs.real;
+	return lhs;
+}
+
+Mu operator+(const Mu& lhs, const Mu& rhs) {
+	return {lhs.real + rhs.real, lhs.image + rhs.image };
+}
+
+Mu operator-(const Mu& lhs, const Mu& rhs) {
+	return {rhs.real - lhs.real, rhs.image - lhs.image };
+}
+
+
 }
 }

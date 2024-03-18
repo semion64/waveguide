@@ -29,6 +29,8 @@ struct excp_file_not_found : public excp {
 
 typedef double double_long;
 typedef std::complex<double_long> double_c;
+const double_c j_mnim = std::complex<double_long>(0.0, 1.0);
+
 const double dd = 0.00000001;
 struct Point {
 	double x, y;
@@ -79,4 +81,6 @@ struct PointR {
 struct Waveguide {
 		double_long a, b;
 };
+
+const Waveguide waveguide_23x10{0.023, 0.01};
 }
