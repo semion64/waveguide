@@ -128,7 +128,7 @@ void Analize() {
 		mask, 
 		w, 
 		wg::materials::CreateWithParams(2.0, 0.0), 
-		wg::materials::CreateWithParams(2.0, 0.5), 
+		wg::materials::CreateWithParams(2.0, 0.01), 
 		0.0005, 
 		wg::waveguide_23x10
 	); 
@@ -136,7 +136,7 @@ void Analize() {
 	std::cout << gamma_ft << std::endl;
 
 	stat_analize::DataS2<double_long> s_points;
-	auto g_n = permutation.CalcGamma_n(stat_analize::BackTaskParams<double_long> {-5, 5, 0.0001,100}, stat_analize::BackTaskParams<double_long> {252, 254, 2, 20});
+	auto g_n = permutation.CalcGamma_n(stat_analize::BackTaskParams<double_long> {-20, 20, 0.0001,100}, stat_analize::BackTaskParams<double_long> {252, 254, 2, 20});
 	
 	std::cout << "g_n: " << g_n << std::endl;
 	
