@@ -20,12 +20,12 @@ double_long to_dbm(double_long R) {
 }
 
 double_c gamma(double_long w, materials::Material material, Waveguide waveguide) {
-	double_c a =
+	return 
+		std::sqrt(
 			(PI*PI) / (waveguide.a * waveguide.a)  
-		- 
-			w * w * EPS_0 * MU_0 * material.eps.value(w) * material.mu.value(w) + 0i;
-	double_c b = std::sqrt(a);
-	return b;
+			- 
+			w * w * EPS_0 * MU_0 * material.eps.value(w) * material.mu.value(w) + 0i
+		);
 }	
 
 double_long CalcR(double_long w, const std::vector<Layer>& structure, Waveguide waveguide) {

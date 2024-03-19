@@ -45,7 +45,7 @@ public:
 		double_long eps_imag, s;
 		stat_analize::DataS<double_long> s_data;
 		std::tie(eps_imag, s, s_data) =  wg::calc::BackTaskByPeackR(spectr_exp, fv, 
-			eps_imag_param.min, eps_imag_param.max, eps_imag_param.N, eps_imag_param.delta, 
+			stat_analize::BackTaskParams<double_long> {eps_imag_param.min, eps_imag_param.max, eps_imag_param.delta, eps_imag_param.N},
 			[&st, &eps_imag_param](double_long val) {
 				Struct st_temp = st;
 				st_temp.Adjust({0,0}, wg::materials::Epsilon{0, val}); 

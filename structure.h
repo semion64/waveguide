@@ -14,6 +14,7 @@ struct Layer{
 		double_long d;
 };
 
+
 class Struct {
 struct excp_struct_already_adjust{};
 public:

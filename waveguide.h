@@ -37,9 +37,9 @@ PointR FindMinR(f_vector fv, const Struct& structure,  Waveguide waveguide = wav
 PointR FindMinR(const DataXY& data, Offset offset = {0,0});
 
 template <typename Val, typename StructParamFunc>
-stat_analize::BackTaskResult<Val> BackTaskByPeackFreq(const DataXY& exp_data, wg::f_vector fv, Val val_start, Val val_end, int N, Val delta, StructParamFunc ps_param_func){
+stat_analize::BackTaskResult<Val> BackTaskByPeackFreq(const DataXY& exp_data, wg::f_vector fv, const stat_analize::BackTaskParams<Val>& bt_param, StructParamFunc ps_param_func){
 	wg::PointR min_exp = wg::calc::FindMinR(exp_data);
-	return stat_analize::BackTask(val_start, val_end, N, delta,  
+	return stat_analize::BackTask(bt_param,  
 		[&min_exp, &fv, &ps_param_func](Val val) {
              return std::sqrt(
 				std::pow(
@@ -52,9 +52,9 @@ stat_analize::BackTaskResult<Val> BackTaskByPeackFreq(const DataXY& exp_data, wg
 }
 
 template <typename Val, typename StructParamFunc>
-stat_analize::BackTaskResult<Val> BackTaskByPeackR(const DataXY& exp_data, wg::f_vector fv, Val val_start, Val val_end, int N, Val delta, StructParamFunc ps_param_func){
+stat_analize::BackTaskResult<Val> BackTaskByPeackR(const DataXY& exp_data, wg::f_vector fv, const stat_analize::BackTaskParams<Val>& bt_param, StructParamFunc ps_param_func){
 	wg::PointR min_exp = wg::calc::FindMinR(exp_data);
-	return stat_analize::BackTask(val_start, val_end, N, delta,  
+	return stat_analize::BackTask(bt_param,  
 		[&min_exp, &fv, &ps_param_func](Val val) {
              return std::sqrt(
 				std::pow(

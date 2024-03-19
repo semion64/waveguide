@@ -37,7 +37,7 @@ struct Material {
 
 Material GetMaterial(std::string material_name);
 
-Material CreateWithParams(double_long eps_real, double_long eps_image = 0, double_long mu_real = 1, double_long mu_image = 0);
+Material CreateWithParams(double_long eps_real, double_long eps_imag = 0, double_long mu_real = 1, double_long mu_imag = 0);
 
 }
 }

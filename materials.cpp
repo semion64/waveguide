@@ -7,8 +7,8 @@ Material GetMaterial(std::string material_name){
 	return Material{Epsilon{0,0}, Mu{0,0}};
 }
 
-Material CreateWithParams(double_long eps_real, double_long eps_image, double_long mu_real, double_long mu_image){
-	return Material{Epsilon{eps_real, eps_image}, Mu{mu_real, mu_image}};
+Material CreateWithParams(double_long eps_real, double_long eps_imag, double_long mu_real, double_long mu_imag){
+	return Material{Epsilon{eps_real, eps_imag}, Mu{mu_real, mu_imag}};
 }
 
 Epsilon& operator+=(Epsilon& lhs, const Epsilon& rhs) {

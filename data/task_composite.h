@@ -119,5 +119,29 @@ void Analize() {
 	
 	//algebra::vector::Vector<int> a {5, 3, -4}, b {6, 7, -8};
 	//std::cout << (a ^ b) << std::endl; 
+	double_long w = wg::calc::w(9'718'000'000);
+	//double_long w = 9'353'000'000;
+	std::vector<wg::perm::MaskAlongX> mask = {{wg::waveguide_23x10.a/2, 0.001}};
+	//PermutatorAlongX(const std::vector<MaskAlongX>& mask, double_long w, const wg::materials::Material& material_0, const wg::materials::Material& material_n,  double_long dx, Waveguide waveguide = waveguide_23x10) 
+	
+	wg::perm::PermutatorAlongX permutation(
+		mask, 
+		w, 
+		wg::materials::CreateWithParams(2.0, 0.0), 
+		wg::materials::CreateWithParams(2.0, 0.5), 
+		0.0005, 
+		wg::waveguide_23x10
+	); 
+	double_c gamma_ft = wg::calc::gamma(w, wg::materials::CreateWithParams(2.0, 0.013));//double_c gamma(double_long w, materials::Material material, Waveguide waveguide = waveguide_23x10);
+	std::cout << gamma_ft << std::endl;
+
+	stat_analize::DataS2<double_long> s_points;
+	auto g_n = permutation.CalcGamma_n(stat_analize::BackTaskParams<double_long> {-5, 5, 0.0001,100}, stat_analize::BackTaskParams<double_long> {252, 254, 2, 20});
+	
+	std::cout << "g_n: " << g_n << std::endl;
+	
+	//plot.Add("before", wg::calc::CalcR(w, DislocStruct(wg::materials::Epsilon {2.0, 0}));
+			
 }
+
 }

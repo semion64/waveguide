@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include <cmath>
+#include <complex>
+
 namespace algebra {
 
 namespace vector{
@@ -12,6 +14,12 @@ struct Vector {
 		return std::sqrt(x*x + y*y + z*z);
 	}
 };
+
+template <typename Val>
+Vector<Val> conj(const Vector<Val>& a) {
+	//return {std::conj(a.x), std::conj(a.y), std::conj(a.z)};
+	return a;
+}
 
 template <typename Val>
 Val ScalarMul(const Vector<Val>& a, const Vector<Val>& b) {
