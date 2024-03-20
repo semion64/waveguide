@@ -17,8 +17,8 @@ struct Vector {
 
 template <typename Val>
 Vector<Val> conj(const Vector<Val>& a) {
-	//return {std::conj(a.x), std::conj(a.y), std::conj(a.z)};
-	return a;
+	return {std::conj(a.x), std::conj(a.y), std::conj(a.z)};
+	//return a;
 }
 
 template <typename Val>
