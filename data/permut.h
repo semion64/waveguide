@@ -70,15 +70,15 @@ void Analize() {
 	
 	double_long w = wg::calc::w(9'462'500'000);
 	//double_long w = 9'353'000'000;
-	std::vector<wg::perm::MaskAlongX> mask = {{wg::waveguide_23x10.a/2, 0.003}};
+	std::vector<wg::perm::MaskAlongX> mask = {{wg::waveguide_23x10.a/2, 0.002}};
 	//PermutatorAlongX(const std::vector<MaskAlongX>& mask, double_long w, const wg::materials::Material& material_0, const wg::materials::Material& material_n,  double_long dx, Waveguide waveguide = waveguide_23x10) 
 	
 	wg::perm::PermutatorAlongX permutation(
 		mask, 
 		w, 
 		wg::materials::CreateWithParams(2.0, 0.0), 
-		wg::materials::CreateWithParams(2.0, 0.2), 
-		0.0005, 
+		wg::materials::CreateWithParams(62, 12), 
+		0.0001, 
 		wg::waveguide_23x10
 	); 
 	
@@ -86,7 +86,7 @@ void Analize() {
 	// stat_analize::DataS2<double_long> s_points;
 	//auto g_n = permutation.CalcGamma_n(stat_analize::BackTaskParams<double_long> {0, 10, 0.0001,100}, stat_analize::BackTaskParams<double_long> {250, 256, 0.01, 100});
 	
-	auto eps = permutation.CalcEps_n(stat_analize::BackTaskParams<double_long> {2, 5, 0.001, 100}, stat_analize::BackTaskParams<double_long> {0, 1, 0.0001, 100});
+	auto eps = permutation.CalcEps_n(stat_analize::BackTaskParams<double_long> {2, 30, 0.001, 100}, stat_analize::BackTaskParams<double_long> {0, 12, 0.0001, 100});
 	std::cout << "eps: " << eps << std::endl;
 	
 	
