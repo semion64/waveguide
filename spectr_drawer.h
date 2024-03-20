@@ -9,18 +9,10 @@ class SpectrDrawer {
 public:
 	SpectrDrawer(const std::string& title, const FileExcluder& file_excluder) : title_(title), file_excluder_(file_excluder) { }
 	
-	void Add(std::string title, const Struct& st, double_long f_begin, double_long f_end, double_long f_step) {
-		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(f_begin, f_end, f_step, st));
-	}
-	
 	void Add(std::string title, const Struct& st, f_vector fv) {
 		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(fv, st));
 	}
 	
-	void Add(std::string title, Struct&& st, double_long f_begin, double_long f_end, double_long f_step) {
-		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(f_begin, f_end, f_step, st));
-	}
-		
 	void Add(std::string title, Struct&& st, f_vector fv) {
 		spectrs_.emplace_back(title, wg::calc::BuildSpectrR(fv, st));
 	}

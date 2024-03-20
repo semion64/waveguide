@@ -8,7 +8,7 @@
 #include "waveguide.h"
 #include "agilent_spectr.h"
 #include "visual.h"
-#include "data/permut.h"
+#include "data/task_test.h"
 
 std::ostream& operator<<(std::ostream& os, wg::Struct st) {
 	int n = 0;

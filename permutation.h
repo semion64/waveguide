@@ -53,44 +53,46 @@ public:
 		return std::abs(s);
 	}	
 		
-	double_c CalcEps_n(const stat_analize::BackTaskParams<double_long>& bt_param_1, const stat_analize::BackTaskParams<double_long>& bt_param_2) {
-		//std::vector<PointS2<Val>> s_points;
-		double_long val_start_1 = bt_param_1.start;
-		double_long val_end_1 = bt_param_1.end;
-		double_long delta_1 = bt_param_1.delta;
-		int N_1 = bt_param_1.N;
-		double_long step_1 = (val_end_1 - val_start_1) / N_1;
+	stat_analize::BackTaskResult2<double_long> CalcEps_n(const stat_analize::BackTaskParams<double_long>& eps_real, const stat_analize::BackTaskParams<double_long>& eps_imag) {
+		stat_analize::SurfaceS2<double_long> surface;
 		
-		double_long val_start_2 = bt_param_2.start;
-		double_long val_end_2 = bt_param_2.end;
-		double_long delta_2 = bt_param_2.delta;
-		int N_2 = bt_param_2.N;
+		double_long val_start_1 = eps_real.start;
+		double_long val_end_1 = eps_real.end;
+		double_long delta_1 = eps_real.delta;
+		int N_1 = eps_real.N;
+		
+		double_long val_start_2 = eps_imag.start;
+		double_long val_end_2 = eps_imag.end;
+		double_long delta_2 = eps_imag.delta;
+		int N_2 = eps_imag.N;
+		
+		double_long step_1 = (val_end_1 - val_start_1) / N_1;
 		double_long step_2 = (val_end_2 - val_start_2) / N_2;
 		
 		double_long s_min = S(wg::calc::gamma(w_, wg::materials::CreateWithParams(val_start_1, val_start_2), waveguide_));
-		double_c g_min = {val_start_1, val_start_2};
+		double_c eps_min = {val_start_1, val_start_2};
+		
 		do {
-			//PointS2<Val> min_before = min;
 			for(double_long val_1 = val_start_1; val_1 <= val_end_1; val_1 += step_1) {
 				for(double_long val_2 = val_start_2; val_2 <= val_end_2; val_2 += step_2) {
 					double_long s = S(wg::calc::gamma(w_, wg::materials::CreateWithParams(val_1, val_2), waveguide_));
 					std::cout << val_1 << "\t" << val_2 << "\t" << s << std::endl;
 					if(s < s_min) {
 						s_min = s;
-						g_min = {val_1, val_2};
+						eps_min = {val_1, val_2};
 					}
-					//s_points.push_back(PointS2{val_1, val_2, s});
+					surface.push_back(stat_analize::PointS2{val_1, val_2, s});
 				}
 			}
-			val_start_1 = g_min.real() - step_1;
-			val_end_1 = g_min.real() + step_1;
+			val_start_1 = eps_min.real() - step_1;
+			val_end_1 = eps_min.real() + step_1;
 			step_1 = (val_end_1 - val_start_1) / N_1;
-			val_start_2 = g_min.imag() - step_2;
-			val_end_2 =  g_min.imag() + step_2;
+			val_start_2 = eps_min.imag() - step_2;
+			val_end_2 =  eps_min.imag() + step_2;
 			step_2 = (val_end_2 - val_start_2) / N_2;
 		} while (step_1 > delta_1 || step_2 > delta_2);
-		return g_min;
-		//return { min.val1, min.val2, min.s, s_points };
+		
+		return {eps_min.real(), eps_min.imag(), s_min, surface};
 	}		
 		
 	double_c integral_Sn (double_c gamma_n) {
@@ -182,7 +184,7 @@ public:
 	
 
 	double_c CalcEps_n2(const stat_analize::BackTaskParams<double_long>& bt_param_1, const stat_analize::BackTaskParams<double_long>& bt_param_2) {
-		//std::vector<PointS2<Val>> s_points;
+		//std::vector<PointS2<Val>> s_PointS;
 		double_long val_start_1 = bt_param_1.start;
 		double_long val_end_1 = bt_param_1.end;
 		double_long delta_1 = bt_param_1.delta;
@@ -211,7 +213,7 @@ public:
 						s_min.imag(s.imag());
 						g_min.real(val_1);
 					}
-					//s_points.push_back(PointS2{val_1, val_2, s});
+					//s_PointS.push_back(PointS2{val_1, val_2, s});
 				}
 			}
 			val_start_1 = g_min.real() - step_1;
@@ -222,7 +224,7 @@ public:
 			step_2 = (val_end_2 - val_start_2) / N_2;
 		} while (step_1 > delta_1 || step_2 > delta_2);
 		return g_min;
-		//return { min.val1, min.val2, min.s, s_points };
+		//return { min.val1, min.val2, min.s, s_PointS };
 	}	
 };
 }

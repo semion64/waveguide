@@ -20,13 +20,33 @@ struct PointS {
 	double_long s;
 	PointS(Val val, double_long s) : val(val), s(s) { }
 };
-
 template <typename Val>
 struct PointS2 {
+	Val val1, val2;
+	double_long s;
+	PointS2(Val val1, Val val2, double_long s) : val1(val1), val2(val2), s(s) { }
+};
+
+template<typename Val>
+using SurfaceS = std::vector<PointS<Val>>;
+template<typename Val>
+using SurfaceS2 = std::vector<PointS2<Val>>;
+
+template <typename Val>
+struct BackTaskResult {
+	Val val;
+	double_long s;
+	SurfaceS<Val> surface;
+	BackTaskResult(Val val, double_long s, SurfaceS<Val> surface) : val(val), s(s), surface(surface) { }
+};
+
+template <typename Val>
+struct BackTaskResult2 {
 	Val val1;
 	Val val2;
 	double_long s;
-	PointS2(Val val1, Val val2, double_long s) : val1(val1), val2(val2), s(s) { }
+	SurfaceS2<Val> surface;
+	BackTaskResult2(Val val1, Val val2, double_long s, SurfaceS2<Val> surface) : val1(val1), val2(val2), s(s), surface(surface) { }
 };
 
 template<typename Val>
@@ -36,17 +56,6 @@ struct BackTaskParams {
 	Val delta;
 	int N;
 };
-
-template<typename Val>
-using DataS = std::vector<PointS<Val>>;
-template<typename Val>
-using BackTaskResult = std::tuple<Val, double_long, DataS<Val>>;
-
-template<typename Val>
-using DataS2 = std::vector<PointS2<Val>>;
-
-template<typename Val>
-using BackTaskResult2 = std::tuple<Val, Val, double_long, DataS2<Val>>;
 
 template<typename Val>
 DataXY PointSToDataXY(std::vector<PointS<Val>> pts) {
@@ -127,7 +136,7 @@ BackTaskResult<Val> BackTask(const BackTaskParams<Val>& bt_param, FuncS func_s) 
 	Val delta = bt_param.delta;
 	Val N = bt_param.N;
 	double_long step = (val_end - val_start) / N;
-	std::vector<PointS<Val>> s_points;
+	std::vector<PointS<Val>> surface;
 	PointS<Val> min {val_start, func_s(val_start)};
 	do {
 		//PointS<Val> min_before = min;
@@ -138,7 +147,7 @@ BackTaskResult<Val> BackTask(const BackTaskParams<Val>& bt_param, FuncS func_s) 
 				min = {val, s};
 			}
 			
-			s_points.push_back(PointS{val, s});
+			surface.push_back(PointS{val, s});
 		}
 		
 		/*if(min.val == min_before.val) {
@@ -150,12 +159,12 @@ BackTaskResult<Val> BackTask(const BackTaskParams<Val>& bt_param, FuncS func_s) 
 		step = (val_end - val_start) / N;
 	} while (step > delta);
 	
-	return { min.val, min.s, s_points };
+	return { min.val, min.s, surface };
 }
 
 template <typename Val, typename FuncS>
 BackTaskResult2<Val> BackTask(const BackTaskParams<Val>& bt_param_1, const BackTaskParams<Val>& bt_param_2, FuncS func_s) {
-	std::vector<PointS2<Val>> s_points;
+	std::vector<PointS2<Val>> s_PointS;
 	
 	Val val_start_1 = bt_param_1.start;
 	Val val_end_1 = bt_param_1.end;
@@ -180,7 +189,7 @@ BackTaskResult2<Val> BackTask(const BackTaskParams<Val>& bt_param_1, const BackT
 					if(s < min.s) {
 						min = {val_1, val_2, s};
 					}
-					s_points.push_back(PointS2{val_1, val_2, s});
+					s_PointS.push_back(PointS2{val_1, val_2, s});
 				}
 			}
 		/*}
@@ -190,7 +199,7 @@ BackTaskResult2<Val> BackTask(const BackTaskParams<Val>& bt_param_1, const BackT
 				if(s < min.s) {
 					min = {val_1, min.val2, s};
 				}
-				s_points.push_back(PointS2{val_1, min.val2, s});
+				s_PointS.push_back(PointS2{val_1, min.val2, s});
 			}
 		}
 		else if(step_2 > delta_2) {
@@ -200,7 +209,7 @@ BackTaskResult2<Val> BackTask(const BackTaskParams<Val>& bt_param_1, const BackT
 					min = {min.val1, val_2, s};
 				}
 				
-				s_points.push_back(PointS2{min.val1, val_2, s});
+				s_PointS.push_back(PointS2{min.val1, val_2, s});
 			}
 		}*/
 		
@@ -220,7 +229,7 @@ BackTaskResult2<Val> BackTask(const BackTaskParams<Val>& bt_param_1, const BackT
 		//}
 	} while (step_1 > delta_1 || step_2 > delta_2);
 	
-	return { min.val1, min.val2, min.s, s_points };
+	return { min.val1, min.val2, min.s, s_PointS };
 }		
 
 Point FindMinY(const DataXY& data, Offset offset = {0, 0});

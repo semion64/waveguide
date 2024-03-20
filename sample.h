@@ -31,7 +31,7 @@ public:
 		return litera_;
 	}
 	
-	std::string AddParam(Name name, Value value) {
+	void AddParam(Name name, Value value) {
 		params_[name] = value;
 	}
 	

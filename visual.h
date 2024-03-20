@@ -13,9 +13,9 @@ namespace visual {
 
 struct DataSeries {
 	std::string title;
-	DataXY points;
-	DataSeries (const std::string& title, const DataXY& data_points) : title(title), points(data_points){ }
-	DataSeries (const std::string& title, DataXY&& data_points) : title(title), points(data_points){ }
+	DataXY PointS;
+	DataSeries (const std::string& title, const DataXY& data_PointS) : title(title), PointS(data_PointS){ }
+	DataSeries (const std::string& title, DataXY&& data_PointS) : title(title), PointS(data_PointS){ }
 };
 
 class DrawerPlot {

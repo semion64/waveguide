@@ -42,17 +42,15 @@ public:
 		// tune on R value (append conductivity layer in the start of structure)
 		std::cout << "CalibR: " << std::endl;
 		
-		double_long eps_imag, s;
-		stat_analize::DataS<double_long> s_data;
-		std::tie(eps_imag, s, s_data) =  wg::calc::BackTaskByPeackR(spectr_exp, fv, 
+		auto result =  wg::calc::BackTaskByPeackR(spectr_exp, fv, 
 			stat_analize::BackTaskParams<double_long> {eps_imag_param.min, eps_imag_param.max, eps_imag_param.delta, eps_imag_param.N},
 			[&st, &eps_imag_param](double_long val) {
 				Struct st_temp = st;
 				st_temp.Adjust({0,0}, wg::materials::Epsilon{0, val}); 
 				return st_temp;
 			});
-		std::cout << "\tdelta_eps_imag = " << eps_imag << ", s = " << s << std::endl;	
-		dEps_ = wg::materials::Epsilon{0, eps_imag};	
+		std::cout << "\tdelta_eps_imag = " << result.val << ", s = " <<  result.s << std::endl;	
+		dEps_ = wg::materials::Epsilon{0, result.val};	
 			
 		if(show_graphics) {
 			Struct st_after = st;
@@ -63,7 +61,7 @@ public:
 				plot.Add("theor_{after}", st_after, fv);
 			plot.Draw();
 			auto plot_s = wg::SpectrDrawer("Calibration BackTask find EPS_{IMAG}", file_ex_);
-				plot_s.Add("s from image", stat_analize::PointSToDataXY(s_data));
+				plot_s.Add("s from image", stat_analize::PointSToDataXY(result.surface));
 			plot_s.Draw();
 		}
 	}

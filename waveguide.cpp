@@ -3,6 +3,20 @@
 namespace wg {
 
 namespace calc {
+	
+wg::f_vector_load make_fv(double_long begin, double_long end, double_long step) {
+	wg::f_vector_load fv;
+	for(auto f = begin; f < end; f += step) {
+		fv.push_back(f);
+	}
+	
+	return fv;
+}
+
+wg::f_vector_load make_fv_N(double_long begin, double_long end, int N) {
+	return make_fv(begin, end, (end - begin) / N);
+}
+
 f_vector_load DataXYToFVector(const DataXY& data) {
 	f_vector_load fv;
 	for(auto pt : data) {
@@ -56,25 +70,12 @@ double_long CalcR(double_long w, const std::vector<Layer>& structure, Waveguide 
 	}
 } */
  
-void BuildSpectrR(std::ostream& os, double_long f_begin, double_long f_end, double_long f_step,	const Struct& st, Waveguide waveguide) {
-	stat_analize::BuildChartXY(os, f_begin, f_end, f_step, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
-}
-
 void BuildSpectrR(std::ostream& os, f_vector fv, const Struct& st, Waveguide waveguide) {
 	stat_analize::BuildChartXY(os, fv, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
 }
 
-DataXY BuildSpectrR(double_long f_begin, double_long f_end, double_long f_step, const Struct& st, Waveguide waveguide) {
-	return stat_analize::BuildChartXY(f_begin, f_end, f_step, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
-}
-
 DataXY BuildSpectrR(f_vector fv, const Struct& st, Waveguide waveguide) {
 	return stat_analize::BuildChartXY(fv, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
-}
-
-PointR FindMinR(double_long f_begin, double_long f_end, double_long f_step, const Struct& st, Offset offset, Waveguide waveguide) {
-	Point min = stat_analize::FindMinY(f_begin, f_end, f_step, [&st, &waveguide](double_long f) {return to_dbm(CalcR(w(f), st.GetAdjustStruct(), waveguide));}, st.GetOffset());
-	return PointR{min.y, min.x};
 }
 
 PointR FindMinR(f_vector fv, const Struct& st, Waveguide waveguide) {
