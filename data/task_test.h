@@ -121,14 +121,15 @@ void Permutation() {
 		mask, 
 		w, 
 		wg::materials::CreateWithParams(2.0, 0.0), 
-		wg::materials::CreateWithParams(62, 12), 
+		wg::materials::CreateWithParams(62.0, 12), 
 		0.0001, 
 		wg::waveguide_23x10
 	); 
 	
-	auto result = permutation.CalcEps_n(stat_analize::BackTaskParams<double_long> {2, 3, 0.001, 100}, stat_analize::BackTaskParams<double_long> {0, 0.1, 0.0001, 100});
+	auto result = permutation.CalcEps_n(stat_analize::BackTaskParams<double_long> {2, 5, 0.01, 100}, stat_analize::BackTaskParams<double_long> {0, 1, 0.001, 100});
 	std::cout << "eps: " << result.val1 << ", " << result.val2 << std::endl;
-		
+	std::cout << "s: " << result.s << std::endl;
+	/*	
 	auto ps1 = DislocStruct(wg::materials::Epsilon{2.0, 0.0});
 	auto ps2 = DislocStruct(wg::materials::Epsilon{result.val1, result.val2});
 
@@ -136,7 +137,7 @@ void Permutation() {
 	plot.Add("before", ps1, fv);
 	plot.Add("after", ps2, fv);
 	plot.Draw();
-	
+	*/
 	std::ofstream os("permut.surf");
 	for(auto& d : result.surface) {
 		os << d.val1 << "\t" << d.val2 << "\t" << std::log(d.s) << std::endl;

@@ -28,7 +28,7 @@ Vec E(double_long w, double_long x, const Waveguide& waveguide = waveguide_23x10
 }
 
 Vec H(double_long x, double_c gam, double_c mu, const Waveguide& waveguide = waveguide_23x10) {
-	double_c _x = - j_mnim * gam * PI / (mu * MU_0 * waveguide.a) * std::sin(PI * x / waveguide.a) * sgs_to_si_H;
+	double_c _x = /*- j_mnim **/ gam * PI / (mu * MU_0 * waveguide.a) * std::sin(PI * x / waveguide.a) * sgs_to_si_H;
 	double_c _z = - j_mnim * PI * PI / (mu * MU_0 * waveguide.a * waveguide.a) * std::cos(PI * x / waveguide.a) * sgs_to_si_H;
 	double_c _y = 0;
 	return {_x, _y, _z};
@@ -99,7 +99,7 @@ public:
 		double_c sum = 0;
 		double_c dS =  dx_ * waveguide_.b; //segment.dx * waveguide_.b;
 		
-		auto gamma_rel = ((gamma_n) / std::conj(gamma_0_));
+		auto gamma_rel = (gamma_n / gamma_0_);
 		for(const auto& segment : mask_) {
 			if(dx_ > segment.dx) {
 				throw excp_dx_more_than_segment{};
@@ -111,7 +111,7 @@ public:
 				Vec E_0 = E(w_, x, waveguide_);
 				Vec E_n = E_0;
 				Vec H_0 = H(x, gamma_0_, mu_0_, waveguide_);
-				Vec H_n = gamma_rel * algebra::vector::conj(H_0);
+				Vec H_n = gamma_rel * H_0;
 				sum += (dEps_ * (E_n * algebra::vector::conj(E_0)) + dMu_ * (H_n * algebra::vector::conj(H_0))) * dS;
 			}
 			
@@ -123,7 +123,7 @@ public:
 				Vec E_0 = E(w_, x, waveguide_);
 				Vec E_n = E_0;
 				Vec H_0 = H(x, gamma_0_, mu_0_, waveguide_);
-				Vec H_n = gamma_rel * algebra::vector::conj(H_0);
+				Vec H_n = gamma_rel * H_0;
 				sum += (dEps_ * (E_n * algebra::vector::conj(E_0)) + dMu_ * (H_n * algebra::vector::conj(H_0))) * dS;
 			}
 		}
@@ -136,13 +136,13 @@ public:
 		double_c  sum = 0;
 		auto end_x = waveguide_.a;
 		double_c dS = dx_ * waveguide_.b;
-		auto gamma_rel = ((gamma_n) / std::conj(gamma_0_));
+		auto gamma_rel = (gamma_n / gamma_0_);
 		double_long x = 0;
 		for(; x < end_x; x += dx_) {
 			Vec E_0 = E(w_, x, waveguide_);
 			Vec E_n = E_0;
 			Vec H_0 = H(x, gamma_0_, mu_0_, waveguide_);
-			Vec H_n = gamma_rel * algebra::vector::conj(H_0);
+			Vec H_n = gamma_rel * H_0;
 			
 			//std::cout << E_n << "\t" << E_0 << "\t" << H_0 << "\t" << H_n << std::endl;
 			sum += (((algebra::vector::conj(E_0) ^ H_n) + (E_n ^ algebra::vector::conj(H_0))).z * dS);
@@ -156,7 +156,7 @@ public:
 			Vec E_0 = E(w_, x, waveguide_);
 			Vec E_n = E_0;
 			Vec H_0 = H(x, gamma_0_, mu_0_, waveguide_);
-			Vec H_n = gamma_rel * algebra::vector::conj(H_0);
+			Vec H_n = gamma_rel * H_0;
 			
 			sum += (((algebra::vector::conj(E_0) ^ H_n) + (E_n ^ algebra::vector::conj(H_0))).z * dS);
 		}
@@ -183,7 +183,7 @@ public:
 	}
 	
 
-	stat_analize::BackTaskResult2<double_long> CalcEps_n2(const stat_analize::BackTaskParams<double_long>& bt_param_1, const stat_analize::BackTaskParams<double_long>& bt_param_2) {
+	double_c CalcEps_n2(const stat_analize::BackTaskParams<double_long>& bt_param_1, const stat_analize::BackTaskParams<double_long>& bt_param_2) {
 		//std::vector<PointS2<Val>> s_PointS;
 		double_long val_start_1 = bt_param_1.start;
 		double_long val_end_1 = bt_param_1.end;
@@ -197,10 +197,8 @@ public:
 		int N_2 = bt_param_2.N;
 		double_long step_2 = (val_end_2 - val_start_2) / N_2;
 		
-		stat_analize::SurfaceS2<double_long> surface;
-		
 		double_c s_min = S2(wg::calc::gamma(w_, wg::materials::CreateWithParams(val_start_1, val_start_2), waveguide_));
-		double_c eps_min = {val_start_1, val_start_2};
+		double_c g_min = {val_start_1, val_start_2};
 		do {
 			//PointS2<Val> min_before = min;
 			for(double_long val_1 = val_start_1; val_1 <= val_end_1; val_1 += step_1) {
@@ -209,25 +207,23 @@ public:
 					//std::cout << val_1 << "\t" << val_2 << "\t" << s << std::endl;
 					if(s.real() < s_min.real()) {
 						s_min.real(s.real());
-						eps_min.imag(val_2);
+						g_min.imag(val_2);
 					}
 					if(s.imag() < s_min.imag()) {
 						s_min.imag(s.imag());
-						eps_min.real(val_1);
+						g_min.real(val_1);
 					}
-					surface.push_back(stat_analize::PointS2{val_1, val_2, std::abs(s)});
 					//s_PointS.push_back(PointS2{val_1, val_2, s});
 				}
 			}
-			val_start_1 = eps_min.real() - step_1;
-			val_end_1 = eps_min.real() + step_1;
+			val_start_1 = g_min.real() - step_1;
+			val_end_1 = g_min.real() + step_1;
 			step_1 = (val_end_1 - val_start_1) / N_1;
-			val_start_2 = eps_min.imag() - step_2;
-			val_end_2 =  eps_min.imag() + step_2;
+			val_start_2 = g_min.imag() - step_2;
+			val_end_2 =  g_min.imag() + step_2;
 			step_2 = (val_end_2 - val_start_2) / N_2;
 		} while (step_1 > delta_1 || step_2 > delta_2);
-		
-		return {eps_min.real(), eps_min.imag(), std::abs(s_min), surface};
+		return g_min;
 		//return { min.val1, min.val2, min.s, s_PointS };
 	}	
 };
