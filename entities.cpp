@@ -11,7 +11,6 @@ DataXY operator-(const DataXY& l, const DataXY& r) {
 }
 
 std::ostream& operator<<(std::ostream& os, const DataXY& r) {
-	os << "DataXY: " << std::endl;
 	for(auto pt : r) {
 		os << pt.x << "\t" << pt.y << std::endl;
 	}

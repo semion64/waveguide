@@ -153,7 +153,9 @@ public:
 		Draw(name, [](const auto& sample) {return sample->GetSpectrR(); }, literas);
 	}
 	
-	
+	PointR FindMinR(std::string name) {
+		return wg::calc::FindMinR(GetSample(name)->GetSpectrR());
+	}
 	
 	template <typename FuncY>
 	DataXY ParametrDependence(std::string param, FuncY func_y, std::initializer_list<std::string> literas = {}) {
