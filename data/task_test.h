@@ -57,7 +57,7 @@ void DrawFiles(std::string title, const std::vector<std::string>& exp_files) {
 		plot.Draw();
 }
 
-std::string exp_dir = "data/remeasure/";
+std::string exp_dir = "data/measure/";
 void Graph_DependenceFromOrientFF(bool draw_graph = false) {
 	wg::SampleSet set = wg::SampleSet(exp_dir + "orient.set", "s2p", *file_ex);
 	if(draw_graph) {
@@ -127,6 +127,11 @@ void Graph_Append() {
 	test_set.DrawSpectrR("Epox", {"d13_1", "d13_2"});
 }
 
+void DataXYInFile(std::string file_name, const DataXY& data) {
+	std::ofstream os(exp_dir + "/depend/" + file_name);
+	os << data;
+}
+
 void Graph_Dependence(std::string set_name, std::string param, std::initializer_list<std::string> field_literas, std::initializer_list<std::string> without_field_literas, bool draw_graph = false) {
 	wg::SampleSet set = wg::SampleSet(exp_dir + set_name, "s2p", *file_ex);
 	DataXY in_field = set.ParametrDependence(param, [](const auto& sample) {
@@ -155,21 +160,32 @@ void Graph_Dependence(std::string set_name, std::string param, std::initializer_
 	std::cout << "============" << param << " Dependence===========" << std::endl;
 	std::cout << "---R in field---" << std::endl;
 	std::cout << in_field << std::endl;
+	DataXYInFile(param + "_R_in", in_field);
+	
 	std::cout << "---R without field---" << std::endl;
 	std::cout << without_field << std::endl;
-	std::cout << "---dR in field---" << std::endl;
+	DataXYInFile(param + "_R_without", without_field);
+	
+	std::cout << "---dR---" << std::endl;
 	std::cout << dR << std::endl;
+	DataXYInFile(param + "_dR", dR);
+	
 	std::cout << "---F in field---" << std::endl;
 	std::cout << in_fieldF << std::endl;
+	DataXYInFile(param + "_F_in", in_fieldF);
+	
 	std::cout << "---F without field---" << std::endl;
 	std::cout << without_fieldF << std::endl;
+	DataXYInFile(param + "_F_without", without_fieldF);
+	
 	std::cout << "---dF in field---" << std::endl;
 	std::cout << dF << std::endl;
+	DataXYInFile(param + "_dF", dF);
 	
 	if(draw_graph) {	
 		auto plot = wg::SpectrDrawer("From " + param + " R", *file_ex);
 		plot.Add("In field", in_field);
-		plot.Add("Without field",without_field);	
+		plot.Add("Without field", without_field);	
 		plot.Draw();
 		
 		auto plotf = wg::SpectrDrawer("From " + param + " F", *file_ex);
