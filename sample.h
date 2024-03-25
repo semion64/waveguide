@@ -102,10 +102,12 @@ public:
 			std::string litera, file_name;
 			is >> litera;
 			std::shared_ptr<Sample> sample = std::make_shared<Sample>(litera, files_directory_ + "/" + litera + "." + data_file_ext, file_excluder_);
+			//std::cout << "============" << litera << std::endl;
 			for(const auto& name : param_names_) {
 				Sample::Value value;
 				is >> value;
 				sample->AddParam(name, value);
+				//std::cout << name << ": " << value << std::endl;
 			}
 			
 			AddSample(sample);

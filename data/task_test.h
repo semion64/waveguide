@@ -57,7 +57,7 @@ void DrawFiles(std::string title, const std::vector<std::string>& exp_files) {
 		plot.Draw();
 }
 
-std::string exp_dir = "data/measure/";
+std::string exp_dir = "data/remeasure/";
 void Graph_DependenceFromOrientFF(bool draw_graph = false) {
 	wg::SampleSet set = wg::SampleSet(exp_dir + "orient.set", "s2p", *file_ex);
 	if(draw_graph) {
@@ -261,6 +261,7 @@ void Analize() {
 	//Graph_DependenceFromOrientFF();
 	//Graph_DependenceFromOrientCNT();
 	//Graph_Append();
+	
 	Graph_Dependence("field.set", "B", 
 		{"c2_2", "b14_2", "b15_2", "b16_2", "b13_2",  "b17_2", "b12_2"}, 
 		{"c2_1", "b14_1", "b15_1", "b16_1", "b13_1",  "b17_1", "b12_1"}, false
@@ -268,7 +269,7 @@ void Analize() {
 	Graph_Dependence("comp.set", "Cv_comp", 
 		{"c7_2", "c6_2", "c5_2", "c8_2"}, 
 		{"c7_1", "c6_1", "c5_1", "c8_1"}, false
-	);
+	);    
 	Graph_Dependence("cnt.set", "Cv_cnt", 
 		{"c10_2", "c11_2", "c12_2", "c13_2", "c15_2", "c14_2"}, 
 		{"c10_1", "c11_1", "c12_1", "c13_1", "c15_1", "c14_1"}, true

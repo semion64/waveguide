@@ -3,6 +3,11 @@
 // sudo apt install gnuplot
 // g++  main.cpp -lboost_iostreams -lboost_system -lboost_filesystem
 
+// In windows:
+// unzip boost to C:\Program Files\boost
+// run: bootstrap gcc
+// run: b2
+
 #include <vector>
 #include <cmath>
 #include <string>
