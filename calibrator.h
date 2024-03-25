@@ -6,8 +6,8 @@ namespace wg {
 	
 struct AdjustEpsParam {
 	double_long min = 0.0;
-	double_long max = 0.2;
-	double_long delta = 0.001;
+	double_long max = 0.05;
+	double_long delta = 0.0001;
 	int N = 100;
 };
 	
@@ -17,6 +17,8 @@ class CalibratorSpectrR {
 public:
 	
 	CalibratorSpectrR(const FileExcluder& file_ex) : file_ex_(file_ex) { }
+	
+	CalibratorSpectrR(const FileExcluder& file_ex, Offset offset, wg::materials::Epsilon dEps) : file_ex_(file_ex), offset_(offset), dEps_(dEps) { }
 	
 	void CalibF(const Struct& st, const DataXY& spectr_exp, wg::f_vector fv, bool show_graphics = false) {
 		std::cout << "CalibF: " << std::endl;
@@ -76,6 +78,23 @@ public:
 	
 	void Adjust(Struct& st) const {
 		st.Adjust(offset_, dEps_);	
+	}
+	
+	void SetEps(wg::materials::Epsilon dEps) {
+		dEps_ = dEps;	
+	}
+	
+	void SetOffset(Offset offset) {
+		offset_ = offset;	
+	}
+	
+	void AppendEps(wg::materials::Epsilon dEps) {
+		dEps_ += dEps;	
+	}
+	
+	void AppendOffset(Offset offset) {
+		offset_.dx += offset.dx;
+		offset_.dy += offset.dy;	
 	}
 	
 private:

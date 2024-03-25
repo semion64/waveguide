@@ -5,7 +5,8 @@
 #include "../sample.h"
 #include "../calibrator.h"
 #include "../permutation.h"
-namespace task_composite{
+
+namespace lab {	
 	
 wg::FileExcluder* file_ex = new wg::FileExcluderAgilent();
 
@@ -57,83 +58,13 @@ void DrawFiles(std::string title, const std::vector<std::string>& exp_files) {
 		plot.Draw();
 }
 
-std::string exp_dir = "data/remeasure/";
-void Graph_DependenceFromOrientFF(bool draw_graph = false) {
-	wg::SampleSet set = wg::SampleSet(exp_dir + "orient.set", "s2p", *file_ex);
-	if(draw_graph) {
-		set.DrawSpectrR("OrientFF 90 degree", {"d2_1", "d2_2"});
-		set.DrawSpectrR("OrientFF 0 degree", {"d3_1", "d3_2"});
-		set.DrawSpectrR("OrientFF * degree", {"d1_1", "d1_2"});
-		set.DrawSpectrR("OrientFF without FF", {"d0_1", "d0_2"});
-	}
-	
-	std::cout << "============Orientation_FF===========" << std::endl;
-	std::cout << "Orientff without ff D0_1: " << set.FindMinR("d0_1").R << "\t" << set.FindMinR("d0_1").f << std::endl;
-	std::cout << "Orientff without ff D0_2: " << set.FindMinR("d0_2").R << "\t" << set.FindMinR("d0_2").f << std::endl;
-	std::cout << "dr: " << set.FindMinR("d0_2").R - set.FindMinR("d0_1").R << "\t" << set.FindMinR("d0_2").f - set.FindMinR("d0_1").f << std::endl << "----------" << std::endl;
-	
-	std::cout << "Orientff 0 D3_1: " << set.FindMinR("d3_1").R << "\t" << set.FindMinR("d3_1").f << std::endl;
-	std::cout << "Orientff 0 D3_2: " << set.FindMinR("d3_2").R << "\t" << set.FindMinR("d3_2").f << std::endl;
-	std::cout << "dr: " << set.FindMinR("d3_2").R - set.FindMinR("d3_1").R << "\t" << set.FindMinR("d3_2").f - set.FindMinR("d3_1").f << std::endl << "----------" << std::endl;
-	
-	std::cout << "Orientff 90 D2_1: " << set.FindMinR("d2_1").R << "\t" << set.FindMinR("d2_1").f << std::endl;
-	std::cout << "Orientff 90 D2_2: " << set.FindMinR("d2_2").R << "\t" << set.FindMinR("d2_2").f << std::endl;
-	std::cout << "dr: " << set.FindMinR("d2_2").R - set.FindMinR("d2_1").R << "\t" << set.FindMinR("d2_2").f - set.FindMinR("d2_1").f << std::endl << "----------" << std::endl;
-		
-	std::cout << "Orientff * D1_1: " << set.FindMinR("d1_1").R << "\t" << set.FindMinR("d1_1").f << std::endl;
-	std::cout << "Orientff * D1_2: " << set.FindMinR("d1_2").R << "\t" << set.FindMinR("d1_2").f << std::endl;
-	std::cout << "dr: " << set.FindMinR("d1_2").R - set.FindMinR("d1_1").R << "\t" << set.FindMinR("d1_2").f - set.FindMinR("d1_1").f << std::endl << "----------" << std::endl;
-}
-
-void Graph_DependenceFromOrientCNT(bool draw_graph = false) {
-	wg::SampleSet set = wg::SampleSet(exp_dir + "orient.set", "s2p", *file_ex);
-	if(draw_graph) {
-		set.DrawSpectrR("OrientCNT 90 degree", {"d6_1", "d6_2"});
-		set.DrawSpectrR("OrientCNT 45 degree", {"d5_1", "d5_2"});
-		set.DrawSpectrR("OrientCNT 0 degree", {"d4_1", "d4_2"});
-		set.DrawSpectrR("OrientCNT * degree", {"d7_1", "d7_2"});
-		set.DrawSpectrR("OrientCNT without CNT", {"d0_1", "d0_2"});
-	}
-	std::cout << "============Orientation_CNT===========" << std::endl;
-	std::cout << "without cnt D0_1: " << set.FindMinR("d0_1").R << "\t" << set.FindMinR("d0_1").f << std::endl;
-	std::cout << "without cnt D0_2: " << set.FindMinR("d0_2").R << "\t" << set.FindMinR("d0_2").f << std::endl;
-	std::cout << "dr: " << set.FindMinR("d0_2").R - set.FindMinR("d0_1").R << "\t" << set.FindMinR("d0_2").f - set.FindMinR("d0_1").f << std::endl << "----------" << std::endl;
-	
-	std::cout << "OrientCNT 0 D4_1: " << set.FindMinR("d4_1").R << "\t" << set.FindMinR("d4_1").f << std::endl;
-	std::cout << "OrientCNT 0 D4_2: " << set.FindMinR("d4_2").R << "\t" << set.FindMinR("d4_2").f << std::endl;
-	std::cout << "dr: " << set.FindMinR("d4_2").R - set.FindMinR("d4_1").R << "\t" << set.FindMinR("d4_2").f - set.FindMinR("d4_1").f << std::endl << "----------" << std::endl;
-	
-	std::cout << "OrientCNT 45 D5_1: " << set.FindMinR("d5_1").R << "\t" << set.FindMinR("d5_1").f << std::endl;
-	std::cout << "OrientCNT 45 D5_2: " << set.FindMinR("d5_2").R << "\t" << set.FindMinR("d5_2").f << std::endl;
-	std::cout << "dr: " << set.FindMinR("d5_2").R - set.FindMinR("d5_1").R << "\t" << set.FindMinR("d5_2").f - set.FindMinR("d5_1").f << std::endl << "----------" << std::endl;
-	
-	std::cout << "OrientCNT 90 D6_1: " << set.FindMinR("d6_1").R << "\t" << set.FindMinR("d6_1").f << std::endl;
-	std::cout << "OrientCNT 90 D6_2: " << set.FindMinR("d6_2").R << "\t" << set.FindMinR("d6_2").f << std::endl;
-	std::cout << "dr: " << set.FindMinR("d6_2").R - set.FindMinR("d6_1").R << "\t" << set.FindMinR("d6_2").f - set.FindMinR("d6_1").f << std::endl << "----------" << std::endl;
-	
-	std::cout << "OrientCNT * D7_1: " << set.FindMinR("d7_1").R << "\t" << set.FindMinR("d7_1").f << std::endl;
-	std::cout << "OrientCNT * D7_2: " << set.FindMinR("d7_2").R << "\t" << set.FindMinR("d7_2").f << std::endl;
-	std::cout << "dr: " << set.FindMinR("d7_2").R - set.FindMinR("d7_1").R << "\t" << set.FindMinR("d7_2").f - set.FindMinR("d7_1").f << std::endl << "----------" << std::endl;
-}
-
-void Graph_Append() {
-	wg::SampleSet test_set = wg::SampleSet(exp_dir + "append.set", "s2p", *file_ex);
-	test_set.DrawSpectrR("Comp", {"d8_1", "d8_2"});
-	test_set.DrawSpectrR("Comp", {"d9_1", "d9_2"});
-	test_set.DrawSpectrR("Cnt", {"d10_1", "d10_2"});
-	
-	test_set.DrawSpectrR("Cnt", {"d11_1", "d11_2"});
-	test_set.DrawSpectrR("OrientFF", {"d12_1", "d12_2"});
-	test_set.DrawSpectrR("Epox", {"d13_1", "d13_2"});
-}
-
 void DataXYInFile(std::string file_name, const DataXY& data) {
-	std::ofstream os(exp_dir + "/depend/" + file_name);
+	std::ofstream os(file_name);
 	os << data;
 }
 
 void Graph_Dependence(std::string set_name, std::string param, std::initializer_list<std::string> field_literas, std::initializer_list<std::string> without_field_literas, bool draw_graph = false) {
-	wg::SampleSet set = wg::SampleSet(exp_dir + set_name, "s2p", *file_ex);
+	wg::SampleSet set = wg::SampleSet(set_name, "s2p", *file_ex);
 	DataXY in_field = set.ParametrDependence(param, [](const auto& sample) {
 				return wg::calc::FindMinR(sample->GetSpectrR()).R;
 			}, field_literas
@@ -202,7 +133,7 @@ void Graph_Dependence(std::string set_name, std::string param, std::initializer_
 	}
 }
 
-wg::CalibratorSpectrR CalibrateOnFp(const std::string& file = "data/fp_3.95.s2p", bool show_graph = false) {
+wg::CalibratorSpectrR CalibrateOnFp(const std::string& file, bool show_graph = false) {
 	auto st_fp = DislocStruct(wg::materials::Epsilon {2.0, 0});
 	wg::CalibratorSpectrR calibrator = wg::CalibratorSpectrR(*file_ex);
 	calibrator.CalibF(st_fp, file, show_graph);
@@ -213,10 +144,66 @@ wg::CalibratorSpectrR CalibrateOnFp(const std::string& file = "data/fp_3.95.s2p"
 			plot.Add("before", wg::calc::BuildSpectrR(wg::calc::make_fv(9'400'000'000, 9'800'000'000, 1000000), st_fp));
 			calibrator.Adjust(st_fp);
 			plot.Add("after", wg::calc::BuildSpectrR(wg::calc::make_fv(9'400'000'000, 9'800'000'000, 1000000), st_fp));
-			plot.Add("experiment", "data/fp_3.95.s2p");
+			plot.Add("experiment", file);
 		plot.Draw();
 	}
 	return calibrator;
+}
+
+wg::materials::Epsilon BackTaskEpsilon(	const std::string& file_exp, 
+										wg::CalibratorSpectrR calibrator, 
+										stat_analize::BackTaskParams<double_long> task_eps_real, 
+										stat_analize::BackTaskParams<double_long> task_eps_imag,
+										bool show_graph = false) {
+	
+	std::cout << "---------------Back Task-------------" << std::endl;
+	std::cout << "\tfile_exp: " << file_exp << std::endl; 
+	auto spectr_exp = file_ex->LoadSpectrR(file_exp);
+	auto fv = file_ex->LoadF(file_exp);
+	auto res_real =  wg::calc::BackTaskByPeackFreq(spectr_exp, fv, 
+		task_eps_real,
+		[&calibrator] (double_long val) {
+			auto st_epox = DislocStruct(wg::materials::Epsilon {val, 0});
+			calibrator.Adjust(st_epox); 
+			return st_epox;
+		});
+	std::cout << "\teps_real: " << res_real.val << ", s = " <<  res_real.s << std::endl;
+	
+	auto res_imag =  wg::calc::BackTaskByPeackR(spectr_exp, fv, 
+		task_eps_imag,
+		[&calibrator, &res_real] (double_long val) {
+			auto st_epox = DislocStruct(wg::materials::Epsilon {res_real.val, val});
+			calibrator.Adjust(st_epox);
+			return st_epox;
+		});
+	std::cout << "\teps_imag: " << res_imag.val << ", s = " <<  res_imag.s << std::endl;	
+		
+	if(show_graph) {
+		auto st_epox = DislocStruct(wg::materials::Epsilon {res_real.val, res_imag.val});
+		calibrator.Adjust(st_epox);
+		auto plot = wg::SpectrDrawer("BackTask: " + file_exp, *file_ex);
+			plot.Add("experiment", spectr_exp);
+			plot.Add("theor", st_epox, fv);
+		plot.Draw();
+		auto plot_s_real = wg::SpectrDrawer("BackTask Real:" + file_exp, *file_ex);
+			plot_s_real.Add("s from real", stat_analize::PointSToDataXY(res_real.surface));
+		plot_s_real.Draw();
+		auto plot_s_imag = wg::SpectrDrawer("BackTask Imag:" + file_exp, *file_ex);
+			plot_s_imag.Add("s from image", stat_analize::PointSToDataXY(res_imag.surface));
+		plot_s_imag.Draw();
+	}
+	std::cout << "================Back Task===============" << std::endl;
+	
+	return wg::materials::Epsilon{res_real.val, res_imag.val};
+}
+} //::lab
+
+namespace task_composite{
+std::string exp_dir = "data/remeasure/";
+wg::FileExcluder* file_ex = lab::file_ex;
+
+void DataXYInFile(std::string file_name, const DataXY& data) {
+	lab::DataXYInFile(exp_dir + "/depend/" + file_name, data);
 }
 
 void Permutation() {
@@ -252,6 +239,34 @@ void Permutation() {
 			
 }
 
+void Params(std::string dir = "data/remeasure", bool show_graph = false) {
+	//auto calibrator = CalibrateOnFp(dir + "/cnt/fp_3.95.s2p", show_graph);
+	wg::CalibratorSpectrR calibrator(*file_ex, Offset{2.9925e+08, 0}, wg::materials::Epsilon{0,  0.013});
+
+	/*auto C0_1 = lab::BackTaskEpsilon(
+		dir + "/cnt/c0_1.s2p", calibrator, 
+		stat_analize::BackTaskParams<double_long> {2, 3, 0.01, 100}, 
+		stat_analize::BackTaskParams<double_long> {0, 0.1, 0.0001, 100}, 
+	show_graph);
+	auto C14_1 = lab::BackTaskEpsilon(
+		dir + "/cnt/c14_1.s2p", calibrator, 
+		stat_analize::BackTaskParams<double_long> {2, 5, 0.01, 100}, 
+		stat_analize::BackTaskParams<double_long> {0, 1, 0.0001, 100}, 
+	show_graph);
+		
+	auto C0_2 = lab::BackTaskEpsilon(
+		dir + "/cnt/c0_2.s2p", calibrator, 
+		stat_analize::BackTaskParams<double_long> {1, 3, 0.01, 100}, 
+		stat_analize::BackTaskParams<double_long> {0, 0.1, 0.0001, 100}, 
+	show_graph);
+	*/
+	auto C14_2 = lab::BackTaskEpsilon(
+		dir + "/cnt/c14_2.s2p", calibrator, 
+		stat_analize::BackTaskParams<double_long> {2, 5, 0.01, 100}, 
+		stat_analize::BackTaskParams<double_long> {0, 1, 0.0001, 100}, 
+	show_graph);
+}
+
 void Analize() {
 	//Permutation();
 	//wg::SampleSet test_set = wg::SampleSet("data/test.set", "s2p", file_ex);
@@ -261,22 +276,123 @@ void Analize() {
 	//Graph_DependenceFromOrientFF();
 	//Graph_DependenceFromOrientCNT();
 	//Graph_Append();
-	
-	Graph_Dependence("field.set", "B", 
+	Params("data/remeasure", true);
+	/*
+	Graph_Dependence(exp_dir + "field.set", "B", 
 		{"c2_2", "b14_2", "b15_2", "b16_2", "b13_2",  "b17_2", "b12_2"}, 
 		{"c2_1", "b14_1", "b15_1", "b16_1", "b13_1",  "b17_1", "b12_1"}, false
 	);
-	Graph_Dependence("comp.set", "Cv_comp", 
+	Graph_Dependence(exp_dir + "comp.set", "Cv_comp", 
 		{"c7_2", "c6_2", "c5_2", "c8_2"}, 
 		{"c7_1", "c6_1", "c5_1", "c8_1"}, false
 	);    
-	Graph_Dependence("cnt.set", "Cv_cnt", 
+	Graph_Dependence(exp_dir + "cnt.set", "Cv_cnt", 
 		{"c10_2", "c11_2", "c12_2", "c13_2", "c15_2", "c14_2"}, 
 		{"c10_1", "c11_1", "c12_1", "c13_1", "c15_1", "c14_1"}, true
-	);
+	);*/
 	
 	//algebra::vector::Vector<int> a {5, 3, -4}, b {6, 7, -8};
 	//std::cout << (a ^ b) << std::endl; 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void Graph_DependenceFromOrientFF(bool draw_graph = false) {
+	wg::SampleSet set = wg::SampleSet(exp_dir + "orient.set", "s2p", *file_ex);
+	if(draw_graph) {
+		set.DrawSpectrR("OrientFF 90 degree", {"d2_1", "d2_2"});
+		set.DrawSpectrR("OrientFF 0 degree", {"d3_1", "d3_2"});
+		set.DrawSpectrR("OrientFF * degree", {"d1_1", "d1_2"});
+		set.DrawSpectrR("OrientFF without FF", {"d0_1", "d0_2"});
+	}
+	
+	std::cout << "============Orientation_FF===========" << std::endl;
+	std::cout << "Orientff without ff D0_1: " << set.FindMinR("d0_1").R << "\t" << set.FindMinR("d0_1").f << std::endl;
+	std::cout << "Orientff without ff D0_2: " << set.FindMinR("d0_2").R << "\t" << set.FindMinR("d0_2").f << std::endl;
+	std::cout << "dr: " << set.FindMinR("d0_2").R - set.FindMinR("d0_1").R << "\t" << set.FindMinR("d0_2").f - set.FindMinR("d0_1").f << std::endl << "----------" << std::endl;
+	
+	std::cout << "Orientff 0 D3_1: " << set.FindMinR("d3_1").R << "\t" << set.FindMinR("d3_1").f << std::endl;
+	std::cout << "Orientff 0 D3_2: " << set.FindMinR("d3_2").R << "\t" << set.FindMinR("d3_2").f << std::endl;
+	std::cout << "dr: " << set.FindMinR("d3_2").R - set.FindMinR("d3_1").R << "\t" << set.FindMinR("d3_2").f - set.FindMinR("d3_1").f << std::endl << "----------" << std::endl;
+	
+	std::cout << "Orientff 90 D2_1: " << set.FindMinR("d2_1").R << "\t" << set.FindMinR("d2_1").f << std::endl;
+	std::cout << "Orientff 90 D2_2: " << set.FindMinR("d2_2").R << "\t" << set.FindMinR("d2_2").f << std::endl;
+	std::cout << "dr: " << set.FindMinR("d2_2").R - set.FindMinR("d2_1").R << "\t" << set.FindMinR("d2_2").f - set.FindMinR("d2_1").f << std::endl << "----------" << std::endl;
+		
+	std::cout << "Orientff * D1_1: " << set.FindMinR("d1_1").R << "\t" << set.FindMinR("d1_1").f << std::endl;
+	std::cout << "Orientff * D1_2: " << set.FindMinR("d1_2").R << "\t" << set.FindMinR("d1_2").f << std::endl;
+	std::cout << "dr: " << set.FindMinR("d1_2").R - set.FindMinR("d1_1").R << "\t" << set.FindMinR("d1_2").f - set.FindMinR("d1_1").f << std::endl << "----------" << std::endl;
+}
+
+void Graph_DependenceFromOrientCNT(bool draw_graph = false) {
+	wg::SampleSet set = wg::SampleSet(exp_dir + "orient.set", "s2p", *file_ex);
+	if(draw_graph) {
+		set.DrawSpectrR("OrientCNT 90 degree", {"d6_1", "d6_2"});
+		set.DrawSpectrR("OrientCNT 45 degree", {"d5_1", "d5_2"});
+		set.DrawSpectrR("OrientCNT 0 degree", {"d4_1", "d4_2"});
+		set.DrawSpectrR("OrientCNT * degree", {"d7_1", "d7_2"});
+		set.DrawSpectrR("OrientCNT without CNT", {"d0_1", "d0_2"});
+	}
+	std::cout << "============Orientation_CNT===========" << std::endl;
+	std::cout << "without cnt D0_1: " << set.FindMinR("d0_1").R << "\t" << set.FindMinR("d0_1").f << std::endl;
+	std::cout << "without cnt D0_2: " << set.FindMinR("d0_2").R << "\t" << set.FindMinR("d0_2").f << std::endl;
+	std::cout << "dr: " << set.FindMinR("d0_2").R - set.FindMinR("d0_1").R << "\t" << set.FindMinR("d0_2").f - set.FindMinR("d0_1").f << std::endl << "----------" << std::endl;
+	
+	std::cout << "OrientCNT 0 D4_1: " << set.FindMinR("d4_1").R << "\t" << set.FindMinR("d4_1").f << std::endl;
+	std::cout << "OrientCNT 0 D4_2: " << set.FindMinR("d4_2").R << "\t" << set.FindMinR("d4_2").f << std::endl;
+	std::cout << "dr: " << set.FindMinR("d4_2").R - set.FindMinR("d4_1").R << "\t" << set.FindMinR("d4_2").f - set.FindMinR("d4_1").f << std::endl << "----------" << std::endl;
+	
+	std::cout << "OrientCNT 45 D5_1: " << set.FindMinR("d5_1").R << "\t" << set.FindMinR("d5_1").f << std::endl;
+	std::cout << "OrientCNT 45 D5_2: " << set.FindMinR("d5_2").R << "\t" << set.FindMinR("d5_2").f << std::endl;
+	std::cout << "dr: " << set.FindMinR("d5_2").R - set.FindMinR("d5_1").R << "\t" << set.FindMinR("d5_2").f - set.FindMinR("d5_1").f << std::endl << "----------" << std::endl;
+	
+	std::cout << "OrientCNT 90 D6_1: " << set.FindMinR("d6_1").R << "\t" << set.FindMinR("d6_1").f << std::endl;
+	std::cout << "OrientCNT 90 D6_2: " << set.FindMinR("d6_2").R << "\t" << set.FindMinR("d6_2").f << std::endl;
+	std::cout << "dr: " << set.FindMinR("d6_2").R - set.FindMinR("d6_1").R << "\t" << set.FindMinR("d6_2").f - set.FindMinR("d6_1").f << std::endl << "----------" << std::endl;
+	
+	std::cout << "OrientCNT * D7_1: " << set.FindMinR("d7_1").R << "\t" << set.FindMinR("d7_1").f << std::endl;
+	std::cout << "OrientCNT * D7_2: " << set.FindMinR("d7_2").R << "\t" << set.FindMinR("d7_2").f << std::endl;
+	std::cout << "dr: " << set.FindMinR("d7_2").R - set.FindMinR("d7_1").R << "\t" << set.FindMinR("d7_2").f - set.FindMinR("d7_1").f << std::endl << "----------" << std::endl;
+}
+
+void Graph_Append() {
+	wg::SampleSet test_set = wg::SampleSet(exp_dir + "append.set", "s2p", *file_ex);
+	test_set.DrawSpectrR("Comp", {"d8_1", "d8_2"});
+	test_set.DrawSpectrR("Comp", {"d9_1", "d9_2"});
+	test_set.DrawSpectrR("Cnt", {"d10_1", "d10_2"});
+	
+	test_set.DrawSpectrR("Cnt", {"d11_1", "d11_2"});
+	test_set.DrawSpectrR("OrientFF", {"d12_1", "d12_2"});
+	test_set.DrawSpectrR("Epox", {"d13_1", "d13_2"});
+}
 }
