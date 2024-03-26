@@ -199,7 +199,7 @@ wg::materials::Epsilon BackTaskEpsilon(	const std::string& file_exp,
 } //::lab
 
 namespace task_composite{
-std::string exp_dir = "data/remeasure/";
+std::string exp_dir = "data/measure/";
 wg::FileExcluder* file_ex = lab::file_ex;
 
 void DataXYInFile(std::string file_name, const DataXY& data) {
@@ -276,20 +276,20 @@ void Analize() {
 	//Graph_DependenceFromOrientFF();
 	//Graph_DependenceFromOrientCNT();
 	//Graph_Append();
-	Params("data/remeasure", true);
-	/*
-	Graph_Dependence(exp_dir + "field.set", "B", 
+	//Params("data/remeasure", true);
+	
+	lab::Graph_Dependence(exp_dir + "field.set", "B", 
 		{"c2_2", "b14_2", "b15_2", "b16_2", "b13_2",  "b17_2", "b12_2"}, 
-		{"c2_1", "b14_1", "b15_1", "b16_1", "b13_1",  "b17_1", "b12_1"}, false
+		{"c2_1", "b14_1", "b15_1", "b16_1", "b13_1",  "b17_1", "b12_1"}, true
 	);
-	Graph_Dependence(exp_dir + "comp.set", "Cv_comp", 
+	lab::Graph_Dependence(exp_dir + "comp.set", "Cv_comp", 
 		{"c7_2", "c6_2", "c5_2", "c8_2"}, 
-		{"c7_1", "c6_1", "c5_1", "c8_1"}, false
+		{"c7_1", "c6_1", "c5_1", "c8_1"}, true
 	);    
-	Graph_Dependence(exp_dir + "cnt.set", "Cv_cnt", 
+	lab::Graph_Dependence(exp_dir + "cnt.set", "Cv_cnt", 
 		{"c10_2", "c11_2", "c12_2", "c13_2", "c15_2", "c14_2"}, 
 		{"c10_1", "c11_1", "c12_1", "c13_1", "c15_1", "c14_1"}, true
-	);*/
+	);
 	
 	//algebra::vector::Vector<int> a {5, 3, -4}, b {6, 7, -8};
 	//std::cout << (a ^ b) << std::endl; 
